@@ -3,32 +3,42 @@ from .interface import Interface
 from .components import UserInput, CursorComponent, ReferenceText, StatsComponent
 from .listener import Listener
 from .buffer import UserBuffer, Buffer
+from .config import Config
 from curses import wrapper
 import sys
 import io
 import os
-
-
-def helpexit():
-    print(
-        "USAGE: fasttyper FILE or pipe text into fasttyper after executing 'exec 3<&0' in your shell"
-    )
-    sys.exit(1)
+import argparse
+import json
 
 
 def main():
-    if len(sys.argv) == 1:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("file", metavar="FILE", nargs="?")
+    parser.add_argument(
+        "--config",
+        "-c",
+        metavar="FILE",
+        help="configuration file",
+        default="~/.config/fasttyper/config.json",
+    )
+    args = parser.parse_args()
+
+    if args.file is None:
         input_lines = sys.stdin.readlines()
         os.dup2(3, 0)
         rbuffer = io.StringIO("".join(input_lines))
-    elif len(sys.argv) == 2:
-        f = sys.argv[1]
-        try:
-            rbuffer = open(f)
-        except:
-            helpexit()
     else:
-        helpexit()
+        with open(args.file) as f:
+            rbuffer = io.StringIO(f.read())
+
+    try:
+        with open(args.config) as f:
+            configmap = json.load(f)
+    except FileNotFoundError:
+        configmap = {}
+
+    config = Config(configmap)
 
     reference_buffer = Buffer(rbuffer)
     user_buffer = UserBuffer()
@@ -39,7 +49,7 @@ def main():
     stats_component = StatsComponent()
 
     listener = Listener()
-    application = Application(listener, user_buffer, reference_buffer)
+    application = Application(listener, user_buffer, reference_buffer, config)
 
     interface = Interface(
         application,
@@ -49,25 +59,7 @@ def main():
     user_buffer.close()
     reference_buffer.close()
 
-    stats = application.stats
-    print(
-        "\n".join(
-            [
-                f"WPM: {stats.correct_words / stats.total_minutes}",
-                f"CPM: {stats.correct_chars / stats.total_minutes}",
-                f"RAW WPM: {(stats.correct_words + stats.incorrect_words) / stats.total_minutes}",
-                f"RAW CPM: {(stats.correct_chars + stats.incorrect_chars) / stats.total_minutes}",
-                f"total seconds: {stats.total_seconds}",
-                f"total minutes: {stats.total_minutes}",
-                f"correct words: {stats.correct_words}",
-                f"correct chars: {stats.correct_chars}",
-                f"incorrect words: {stats.incorrect_words}",
-                f"incorrect chars: {stats.incorrect_chars}",
-                f"total words: {stats.incorrect_words + stats.correct_words}",
-                f"total chars: {stats.incorrect_chars + stats.correct_chars}",
-            ]
-        )
-    )
+    print(config.get("summary_template").format(stats=application.stats))
 
 
 if __name__ == "__main__":

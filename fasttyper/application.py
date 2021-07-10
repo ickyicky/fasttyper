@@ -1,9 +1,10 @@
 class Application:
-    def __init__(self, listener, user_buffer, reference_buffer):
+    def __init__(self, listener, user_buffer, reference_buffer, config):
         self._running = False
         self.listener = listener
         self.user_buffer = user_buffer
         self.reference_buffer = reference_buffer
+        self.config = config
 
         from .state import StateMachine
 

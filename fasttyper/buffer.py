@@ -5,6 +5,7 @@ from .listener import Action
 class Buffer:
     def __init__(self, buffer):
         self.buffer = buffer
+        self._strip_end()
 
     def _write(self, data):
         self.buffer.write(data)
@@ -76,6 +77,20 @@ class Buffer:
 
     def close(self):
         self.buffer.close()
+
+    def _strip_end(self):
+        self.buffer.read()
+        while True:
+            last_char = self._last_char()
+
+            if last_char is None:
+                break
+
+            if last_char.isalnum():
+                break
+
+            self._del_char()
+        self.buffer.seek(0)
 
 
 class UserBuffer(Buffer):

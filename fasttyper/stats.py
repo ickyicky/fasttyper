@@ -42,3 +42,33 @@ class Stats:
     @property
     def total_minutes(self):
         return self.total_seconds / 60
+
+    @property
+    def total_words(self):
+        return self.incorrect_words + self.correct_words
+
+    @property
+    def total_chars(self):
+        return self.incorrect_chars + self.correct_chars
+
+    @property
+    def wpm(self):
+        return self.correct_words / self.total_minutes
+
+    @property
+    def cpm(self):
+        return self.correct_chars / self.total_minutes
+
+    @property
+    def raw_wpm(self):
+        return self.total_words / self.total_minutes
+
+    @property
+    def raw_cpm(self):
+        return self.total_chars / self.total_minutes
+
+    @property
+    def accuracy(self):
+        if self.total_chars:
+            return self.correct_chars / self.total_chars * 100
+        return 100
