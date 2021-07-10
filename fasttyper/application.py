@@ -43,6 +43,10 @@ class Application:
             self._running = False
             self.stats.signal_stop()
 
+    def summarize(self):
+        self.stats.summarize(self.config.get("summary_template"))
+        self.stats.export_to_datafile(self.config.get("summary_datafile"))
+
 
 class StoppingSignal(Exception):
     pass

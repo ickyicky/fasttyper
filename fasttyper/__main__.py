@@ -12,32 +12,7 @@ import argparse
 import json
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("file", metavar="FILE", nargs="?")
-    parser.add_argument(
-        "--config",
-        "-c",
-        metavar="FILE",
-        help="configuration file",
-        default="~/.config/fasttyper/config.json",
-    )
-    args = parser.parse_args()
-
-    if args.file is None:
-        input_lines = sys.stdin.readlines()
-        os.dup2(3, 0)
-        rbuffer = io.StringIO("".join(input_lines))
-    else:
-        with open(args.file) as f:
-            rbuffer = io.StringIO(f.read())
-
-    try:
-        with open(args.config) as f:
-            configmap = json.load(f)
-    except FileNotFoundError:
-        configmap = {}
-
+def initialize(configmap, rbuffer):
     config = Config(configmap)
 
     reference_buffer = Buffer(rbuffer)
@@ -59,7 +34,41 @@ def main():
     user_buffer.close()
     reference_buffer.close()
 
-    print(config.get("summary_template").format(stats=application.stats))
+    application.summarize()
+
+
+def main():
+    is_tty = sys.stdin.isatty()
+
+    parser = argparse.ArgumentParser()
+
+    if is_tty:
+        parser.add_argument("file", metavar="FILE")
+
+    parser.add_argument(
+        "--config",
+        "-c",
+        metavar="FILE",
+        help="configuration file",
+        default="~/.config/fasttyper/config.json",
+    )
+    args = parser.parse_args()
+
+    if is_tty:
+        with open(os.path.expanduser(args.file)) as f:
+            rbuffer = io.StringIO(f.read())
+    else:
+        input_lines = sys.stdin.readlines()
+        os.dup2(3, 0)
+        rbuffer = io.StringIO("".join(input_lines))
+
+    try:
+        with open(os.path.expanduser(args.config)) as f:
+            configmap = json.load(f)
+    except FileNotFoundError:
+        configmap = {}
+
+    initialize(configmap, rbuffer)
 
 
 if __name__ == "__main__":
