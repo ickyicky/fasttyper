@@ -16,25 +16,26 @@ class Listener:
         pass
 
     def handle_key(self, key):
-        if key == "KEY_BACKSPACE":
-            return Action.del_word, key
-        elif key == chr(127):
-            return Action.del_char, key
-        elif key.startswith("KEY"):
-            # special key pressed, or compbination
-            return Action.invalid, key
-        elif key == " ":
-            return Action.add_space, key
-        elif key == "\n":
-            return Action.add_newline, key
-        elif key.isprintable():
-            return Action.add_char, key
+        action = Action.invalid
 
-        return Action.invalid, key
+        if key == 263:
+            action = Action.del_word
+        elif isinstance(key, int):
+            pass
+        elif key == chr(127):
+            action = Action.del_char
+        elif key == " ":
+            action = Action.add_space
+        elif key == "\n":
+            action = Action.add_newline
+        elif key.isprintable():
+            action = Action.add_char
+
+        return action, key
 
     def listen(self, screen):
         try:
-            key = screen.getkey()
+            key = screen.get_wch()
             return self.handle_key(key)
         except KeyboardInterrupt:
             raise StoppingSignal()
