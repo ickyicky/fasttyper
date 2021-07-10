@@ -110,10 +110,14 @@ class Stats:
 
         record = self.produce_record()
 
-        with open(datafile, "w") as f:
-            writter = csv.DictWriter(f, fieldnames=record.keys())
-
-            if not exists:
+        if not exists:
+            with open(datafile, "w") as f:
+                writter = csv.DictWriter(f, fieldnames=record.keys())
                 writter.writeheader()
+                writter.writerow(record)
+        else:
+            with open(datafile, "a") as f:
+                writter = csv.DictWriter(f, fieldnames=record.keys())
+                writter.writerow(record)
 
-            writter.writerow(record)
+        print(f"\nwrote stats to {datafile}")

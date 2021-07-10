@@ -20,7 +20,7 @@ class Config:
             "total chars: {stats.total_chars}\n"
             "accuracy: {stats.accuracy}%"
         ),
-        "summary_datafile": "~/.config/cache/fasttyper/datafile.csv",
+        "summary_datafile": "~/.cache/fasttyper/datafile.csv",
     }
 
     def __init__(self, configmap):

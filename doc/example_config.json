@@ -5,5 +5,5 @@
     "stats_template": "\n\nwpm: {stats.wpm}\ntime: {stats.total_seconds}s",
     "stats_color": 5,
     "summary_template": "WPM: {stats.wpm}\nCPM: {stats.cpm}\nRAW WPM: {stats.raw_wpm}\nRAW CPM: {stats.raw_cpm}\ntotal seconds: {stats.total_seconds}\ntotal minutes: {stats.total_minutes}\ncorrect words: {stats.correct_words}\ncorrect chars: {stats.correct_chars}\nincorrect words: {stats.incorrect_words}\nincorrect chars: {stats.incorrect_chars}\ntotal words: {stats.total_words}\ntotal chars: {stats.total_chars}\naccuracy: {stats.accuracy}%",
-    "summary_datafile": "~/.config/cache/fasttyper/datafile.csv"
+    "summary_datafile": "~/.cache/fasttyper/datafile.csv"
 }

@@ -43,7 +43,7 @@ def main():
     parser = argparse.ArgumentParser()
 
     if is_tty:
-        parser.add_argument("file", metavar="FILE")
+        parser.add_argument("file", metavar="FILE", help="file to type")
 
     parser.add_argument(
         "--config",

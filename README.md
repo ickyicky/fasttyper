@@ -15,9 +15,9 @@ from cloned github repository. Without any argument program waits for user to en
 
 `python3 -m fasttyper example_text.txt`
 
-Program also allows user to pipe text into it. Keep in mind, it only supports spaces and new line characters, so you won't be able to table tabs. For example, you can run _Fasttyper_ on rfurtune generated quote changing tabulators to spaces with sed:
+Program also allows user to pipe text into it. Keep in mind, it only supports spaces and new line characters, so you won't be able to table tabs. For example, you can run _Fasttyper_ on fortune generated quote changing tabulators to spaces with sed:
 
-`rfurtune | sed 's/\t/ /g' | python3 -m fasttyper`
+`furtune | sed 's/\t/ /g' | python3 -m fasttyper`
 
 # Known issues
 
