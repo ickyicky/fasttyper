@@ -21,8 +21,4 @@ Program also allows user to pipe text into it. Keep in mind, it only supports sp
 
 # Known issues
 
-_Fasttyper_ relies on curses library, so in order to allow it to first read piped text and then read characters from terminal users have to exec:
-
-`exec 3<&0`
-
-in their terminal before piping text to _Fasttyper_, duplicating stdin to descriptor 3.
+Too large text brakes the app.

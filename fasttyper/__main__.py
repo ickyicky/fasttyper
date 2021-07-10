@@ -59,7 +59,10 @@ def main():
             rbuffer = io.StringIO(f.read())
     else:
         input_lines = sys.stdin.readlines()
-        os.dup2(3, 0)
+
+        with open("/dev/tty") as f:
+            os.dup2(f.fileno(), 0)
+
         rbuffer = io.StringIO("".join(input_lines))
 
     try:
