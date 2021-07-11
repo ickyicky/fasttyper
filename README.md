@@ -17,7 +17,9 @@ _Fasttyper_ is ran as an python module, so to execute it simply type:
 
 `python3 -m fasttyper`
 
-from cloned github repository, if you didn't [install](#installation) package from TestPyPi. Without any argument program waits for user to enter text manually and then signal the end of it with keyboard interrupt (CTRL+C). _Fasttyper_ can open text files, which path should be provided as first and only argument to the module execution, for example:
+from cloned github repository, if you didn't [install](#installation) package from TestPyPi. 
+
+_Fasttyper_ can open text files, which path should be provided as first and only argument to the module execution, for example:
 
 `python3 -m fasttyper example_text.txt`
 
@@ -33,6 +35,4 @@ You can use another similar projects set of words as well, for example to create
 
 `curl -s https://raw.githubusercontent.com/Miodec/monkeytype/master/static/languages/english.json | python3 -c "import sys, json; print('\n'.join(json.load(sys.stdin)['words']))" | shuf -n20 | awk 1 ORS=' ' | python3 -m fasttyper`
 
-# Known issues
-
-Too large text brakes the app.
+To exit program simply complete test or press CTRL+C.

@@ -1,46 +1,27 @@
-import io
 from .listener import Action
 
 
 class Buffer:
     def __init__(self, buffer):
-        self.buffer = buffer
-        self._strip_end()
+        self.buffer = " ".join(buffer.split())
 
     def _write(self, data):
-        self.buffer.write(data)
+        self.buffer += data
 
     def _del_char(self):
-        pos = self.buffer.tell()
-
-        if pos > 0:
-            self.buffer.seek(pos - 1)
-            self.buffer.truncate()
-            return True
+        self.buffer = self.buffer[:-1]
 
     def _last_char(self):
-        pos = self.buffer.tell()
-
-        if pos > 0:
-            self.buffer.seek(pos - 1)
-            return self.buffer.read(1)
+        if len(self.buffer) > 0:
+            return self.buffer[-1]
 
     def _del_word(self):
-        found_word = False
+        words = self.buffer.split()
 
-        while True:
-            last_char = self._last_char()
-
-            if last_char is None:
-                break
-
-            if last_char in (" ", "\n") and found_word:
-                break
-
-            if last_char.isalnum() and not found_word:
-                found_word = True
-
-            self._del_char()
+        if len(words) > 1:
+            self.buffer = " ".join(words[:-1]) + " "
+        else:
+            self.buffer = ""
 
     def handle_action(self, action, char):
         if action == Action.add_char:
@@ -55,44 +36,18 @@ class Buffer:
             self._del_word()
 
     def get_matrix(self, position=0):
-        self.buffer.seek(position)
-        return self.buffer.read()
+        return self.buffer[position:]
 
     def get_position(self):
-        return self.buffer.tell()
+        return len(self.buffer)
 
     def get_lenght(self):
-        position = self.get_position()
-        self.buffer.read()
-        lenght = self.get_position()
-        self.buffer.seek(position)
-        return lenght
+        return len(self.buffer)
 
     def read(self, position):
-        _position = self.get_position()
-        self.buffer.seek(position)
-        char = self._last_char()
-        self.buffer.seek(_position)
-        return char
-
-    def close(self):
-        self.buffer.close()
-
-    def _strip_end(self):
-        self.buffer.read()
-        while True:
-            last_char = self._last_char()
-
-            if last_char is None:
-                break
-
-            if last_char.isalnum():
-                break
-
-            self._del_char()
-        self.buffer.seek(0)
+        return self.buffer[position]
 
 
 class UserBuffer(Buffer):
     def __init__(self):
-        super().__init__(io.StringIO())
+        super().__init__("")

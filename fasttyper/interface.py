@@ -16,8 +16,6 @@ class Interface:
 
     def init(self, screen):
         self.init_colors()
-        for component in self.components:
-            component.init(screen, self.application)
 
     def update(self, screen):
         screen.clear()

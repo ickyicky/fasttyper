@@ -1,6 +1,12 @@
 from .application import Application
 from .interface import Interface
-from .components import UserInput, CursorComponent, ReferenceText, StatsComponent
+from .components import (
+    UserInput,
+    CursorComponent,
+    ReferenceText,
+    StatsComponent,
+    TextBox,
+)
 from .listener import Listener
 from .buffer import UserBuffer, Buffer
 from .config import Config
@@ -18,21 +24,20 @@ def initialize(configmap, rbuffer):
     reference_buffer = Buffer(rbuffer)
     user_buffer = UserBuffer()
 
-    cursor_component = CursorComponent()
-    user_input = UserInput(cursor_component)
-    reference_text = ReferenceText()
-    stats_component = StatsComponent()
+    cursor_component = CursorComponent(config)
+    text_box = TextBox(config, cursor_component)
+    user_input = UserInput(config, text_box)
+    reference_text = ReferenceText(config, text_box)
+    stats_component = StatsComponent(config)
 
     listener = Listener()
     application = Application(listener, user_buffer, reference_buffer, config)
 
     interface = Interface(
         application,
-        [user_input, reference_text, stats_component, cursor_component],
+        [user_input, reference_text, text_box, stats_component, cursor_component],
     )
     wrapper(interface)
-    user_buffer.close()
-    reference_buffer.close()
 
     application.summarize()
 
@@ -56,14 +61,14 @@ def main():
 
     if is_tty:
         with open(os.path.expanduser(args.file)) as f:
-            rbuffer = io.StringIO(f.read())
+            rbuffer = f.read()
     else:
         input_lines = sys.stdin.readlines()
 
         with open("/dev/tty") as f:
             os.dup2(f.fileno(), 0)
 
-        rbuffer = io.StringIO("".join(input_lines))
+        rbuffer = "".join(input_lines)
 
     try:
         with open(os.path.expanduser(args.config)) as f:
