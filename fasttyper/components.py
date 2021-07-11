@@ -133,8 +133,9 @@ class TextBox(TextComponent):
 
         if next_word:
             last_line = lines[-1]
-            if len(last_line) != 0:
-                lines[-1] = lines[-1][: -len(next_word)]
+            if len(last_line) == 0:
+                lines = lines[:-1]
+            lines[-1] = lines[-1][: -len(next_word)]
 
         lines = lines[: self.maxy - self.usedy]
         return "\n".join(lines)
