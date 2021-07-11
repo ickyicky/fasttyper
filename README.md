@@ -19,9 +19,9 @@ Program also allows user to pipe text into it. Keep in mind, it only supports sp
 
 `furtune | sed 's/\t/ /g' | python3 -m fasttyper`
 
-or if you want to randomize words from given file with shuf, and then keep them in the same line, replacing new lines with spaces using sed, on for example all disctionaries in system:
+or if you want to randomize words from given file with shuf, and then keep them in the same line, replacing new lines with spaces using awk, on for example all disctionaries in system:
 
-`shuf -n5 /usr/share/dict/* | sed ':a;N;$!ba;s/\n/ /g' | python -m fasttyper`
+`shuf -n5 /usr/share/dict/* | awk 1 ORS=' ' | python -m fasttyper`
 
 # Known issues
 
