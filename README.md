@@ -1,9 +1,9 @@
 # fasttyper
-[![](https://github.com/ickyicky/fasttyper/blob/main/doc/example.png?raw=true)](https://github.com/ickyicky/fasttyper)
+[![](https://github.com/ickyicky/fasttyper/blob/main/doc/example.gif?raw=true)](https://github.com/ickyicky/fasttyper)
 
 # About
 
-_Fasttyper_ is minimalistic typing test based on user provided exercising text. It supports both reading from text files and stdin supporting wide range of usecases.
+_Fasttyper_ is minimalistic typing test based on user provided exercising text. It supports both reading from text files and stdin supporting wide range of usecases. The goal was to create it as simple as it can be, without any additional bloatware functionalities. That means that _Fasttyper_ doesn't come with build in test generator and you have to provide your own scripts generating tests. Some examples of such scrips are providen in [Usage section](#usage).
 
 # Usage
 
@@ -22,6 +22,10 @@ Program also allows user to pipe text into it. Keep in mind, it only supports sp
 or if you want to randomize words from given file with shuf, and then keep them in the same line, replacing new lines with spaces using awk, on for example all disctionaries in system:
 
 `shuf -n5 /usr/share/dict/* | awk 1 ORS=' ' | python -m fasttyper`
+
+You can use another similar projects set of words as well, for example to create test with 20 random words from [Monkeytype's](https://github.com/Miodec/monkeytype) english 100 dictionary use:
+
+`curl -s https://raw.githubusercontent.com/Miodec/monkeytype/master/static/languages/english.json | python3 -c "import sys, json; print('\n'.join(json.load(sys.stdin)['words']))" | shuf -n20 | awk 1 ORS=' ' | python3 -m fasttyper`
 
 # Known issues
 
