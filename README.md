@@ -25,14 +25,14 @@ _Fasttyper_ can open text files, which path should be provided as first and only
 
 Program also allows user to pipe text into it. Keep in mind, it only supports spaces and new line characters, so you won't be able to table tabs. For example, you can run _Fasttyper_ on fortune generated quote changing tabulators to spaces with sed:
 
-`furtune | sed 's/\t/ /g' | python3 -m fasttyper`
+`furtune | python3 -m fasttyper`
 
-or if you want to randomize words from given file with shuf, and then keep them in the same line, replacing new lines with spaces using awk, on for example all disctionaries in system:
+or if you want to randomize words from given file with shuf on for example all disctionaries in system:
 
-`shuf -n5 /usr/share/dict/* | awk 1 ORS=' ' | python -m fasttyper`
+`shuf -n5 /usr/share/dict/* | python -m fasttyper`
 
 You can use another similar projects set of words as well, for example to create test with 20 random words from [Monkeytype's](https://github.com/Miodec/monkeytype) english 100 dictionary use:
 
-`curl -s https://raw.githubusercontent.com/Miodec/monkeytype/master/static/languages/english.json | python3 -c "import sys, json; print('\n'.join(json.load(sys.stdin)['words']))" | shuf -n20 | awk 1 ORS=' ' | python3 -m fasttyper`
+`curl -s https://raw.githubusercontent.com/Miodec/monkeytype/master/static/languages/english.json | python3 -c "import sys, json; print('\n'.join(json.load(sys.stdin)['words']))" | shuf -n20 | python3 -m fasttyper`
 
 To exit program simply complete test or press CTRL+C.
