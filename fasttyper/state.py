@@ -15,6 +15,16 @@ class StateMachine:
         self.mistake_position = None
         self.application = application
 
+    def running(self):
+        return self.state != State.finished
+
+    def signal_stop(self):
+        self.state = State.finished
+
+    def signal_start(self):
+        self.state = State.valid
+        self.mistake_position = None
+
     def update(self, action, char):
         user_position = self.application.user_buffer.get_position()
         if self.state == State.invalid:
@@ -29,7 +39,6 @@ class StateMachine:
                     self.state = State.invalid
                 elif user_position == self.application.reference_buffer.get_lenght():
                     self.state = State.finished
-                    raise StoppingSignal
 
     def valid(self):
-        return self.state == State.valid
+        return self.state in (State.valid, State.finished)

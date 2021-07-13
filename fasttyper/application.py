@@ -1,6 +1,5 @@
 class Application:
     def __init__(self, listener, user_buffer, reference_buffer, config):
-        self._running = False
         self.listener = listener
         self.user_buffer = user_buffer
         self.reference_buffer = reference_buffer
@@ -15,10 +14,10 @@ class Application:
         self.stats = Stats()
 
     def start(self):
-        self._running = True
+        self.state.signal_start()
 
     def running(self):
-        return self._running
+        return self.state.running()
 
     def valid_user_text_position(self):
         if self.state.mistake_position is not None:
@@ -38,9 +37,9 @@ class Application:
             action, key = self.listener.listen(screen)
             self.user_buffer.handle_action(action, key)
             self.state.update(action, key)
-            self.stats.update(action, self.state.valid())
+            self.stats.update(action, self.state.valid(), self.state.running())
         except StoppingSignal:
-            self._running = False
+            self.state.signal_stop()
             self.stats.signal_stop()
 
     def summarize(self):
