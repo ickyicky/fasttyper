@@ -6,7 +6,6 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setup(
     name="fasttyper-pkg-ickyicky",
     version="0.1",
-    :xa
     author="Piotr Domanski",
     author_email="pi.domanski@gmail.com",
     description="Minimalistic typing exercise",
