@@ -56,7 +56,7 @@ class Stats:
 
     @property
     def wpm(self):
-        return self.correct_words / self.total_minutes
+        return self.cpm / 5
 
     @property
     def cpm(self):
@@ -64,7 +64,7 @@ class Stats:
 
     @property
     def raw_wpm(self):
-        return self.total_words / self.total_minutes
+        return self.raw_cpm / 5
 
     @property
     def raw_cpm(self):
