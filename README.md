@@ -39,10 +39,17 @@ To exit program simply complete test or press CTRL+C.
 
 ## Example scripts
 
-```bash:examples/fasttyper.sh
-
+```sh
+function ff() {
+	mkdir -p ~/.cache/fasttyper
+	local amount="${1:-50}"
+	local language="${2:-english}"
+	local sfile=~/.cache/fasttyper/$language
+	local source_path=https://raw.githubusercontent.com/Miodec/monkeytype/master/static/languages/$language.json
+	[[ ! -f $sfile ]] && curl -s $source_path | python3 -c "import sys, json; print('\n'.join(json.load(sys.stdin)['words']))" > $sfile
+	shuf -n $amount $sfile | python3 -m fasttyper
+}
 ```
-
-This script shuffles N words from cached word list, and if given word list doesnt exist it download's it.
-
 `ff 50 english_1k`
+
+This shell function shuffles N words from cached word list, and if given word list doesnt exist it download's it.
