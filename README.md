@@ -36,3 +36,13 @@ You can use another similar projects set of words as well, for example to create
 `curl -s https://raw.githubusercontent.com/Miodec/monkeytype/master/static/languages/english.json | python3 -c "import sys, json; print('\n'.join(json.load(sys.stdin)['words']))" | shuf -n20 | python3 -m fasttyper`
 
 To exit program simply complete test or press CTRL+C.
+
+## Example scripts
+
+```bash:examples/fasttyper.sh
+
+```
+
+This script shuffles N words from cached word list, and if given word list doesnt exist it download's it.
+
+`ff 50 english_1k`
