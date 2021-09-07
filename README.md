@@ -1,5 +1,5 @@
 # fasttyper
-[![](https://github.com/ickyicky/fasttyper/blob/main/doc/example.gif?raw=true)](https://github.com/ickyicky/fasttyper)
+[![](https://github.com/ickyicky/fasttyper/blob/main/doc/fasttyper.gif?raw=true)](https://github.com/ickyicky/fasttyper)
 
 # About
 
