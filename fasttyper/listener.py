@@ -19,7 +19,7 @@ class Listener:
         action = Action.invalid
 
         if key == 263:
-            action = Action.del_word
+            action = Action.del_char  # TODO
         elif isinstance(key, int):
             pass
         elif key == chr(127):
