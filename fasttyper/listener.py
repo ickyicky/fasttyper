@@ -21,7 +21,7 @@ class Listener:
         if key == "\t":
             self.tabbed = True
         elif key == "\n" and self.tabbed:
-            raise StoppingSignal()
+            raise StoppingSignal(silent=True)
         elif key == 263:
             action = Action.del_word
             self.tabbed = False

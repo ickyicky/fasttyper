@@ -40,6 +40,7 @@ def initialize(configmap, rbuffer):
     wrapper(interface)
 
     application.summarize()
+    application.exit()
 
 
 def main():

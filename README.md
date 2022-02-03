@@ -35,7 +35,7 @@ You can use another similar projects set of words as well, for example to create
 
 `curl -s https://raw.githubusercontent.com/Miodec/monkeytype/master/static/languages/english.json | python3 -c "import sys, json; print('\n'.join(json.load(sys.stdin)['words']))" | shuf -n20 | python3 -m fasttyper`
 
-To exit you can either finish test, use `KeyboardInterrupt` (CTRL+C) or tap **tab** then **enter**.
+To exit you can either finish test, use `KeyboardInterrupt` (CTRL+C) or tap **tab** then **enter**. After you finish test, there will be summary printed, use enter to exit from it.
 
 ## Example scripts
 

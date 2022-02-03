@@ -39,6 +39,7 @@ class StateMachine:
                     self.state = State.invalid
                 elif user_position == self.application.reference_buffer.get_lenght():
                     self.state = State.finished
+                    self.application.finished = True
 
     def valid(self):
         return self.state in (State.valid, State.finished)
