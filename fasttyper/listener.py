@@ -13,23 +13,34 @@ class Action(enum.Enum):
 
 class Listener:
     def __init__(self):
-        pass
+        self.tabbed = False
 
     def handle_key(self, key):
         action = Action.invalid
 
-        if key == 263:
-            action = Action.del_char  # TODO
+        if key == "\t":
+            self.tabbed = True
+        elif key == "\n" and self.tabbed:
+            raise StoppingSignal()
+        elif key == 263:
+            action = Action.del_word
+            self.tabbed = False
         elif isinstance(key, int):
-            pass
+            self.tabbed = False
         elif key == chr(127):
             action = Action.del_char
+            self.tabbed = False
         elif key == " ":
             action = Action.add_space
+            self.tabbed = False
         elif key == "\n":
             action = Action.add_newline
+            self.tabbed = False
         elif key.isprintable():
             action = Action.add_char
+            self.tabbed = False
+        else:
+            self.tabbed = False
 
         return action, key
 
