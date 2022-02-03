@@ -57,3 +57,5 @@ function ff() {
 `ff 50 english_1k`
 
 This shell function shuffles N words from cached word list, and if given word list doesnt exist it download's it. It runs in loop, but does sleep 1s after each taken test (or interrupted!) so to exit loop just use CTRL+C twice: once to exit fasttyper, second time to exit loop on sleep.
+
+The above script is avalible for download from doc folder.
