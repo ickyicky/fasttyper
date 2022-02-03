@@ -3,22 +3,22 @@ class Config:
         "user_input_valid_color": 3,
         "user_input_invalid_color": 2,
         "reference_text_color": 8,
-        "stats_template": "\n\nwpm: {stats.wpm}\ntime: {stats.total_seconds}s",
+        "stats_template": "\n\nwpm: {stats.wpm:0.2f}\ntime: {stats.total_seconds:0.2f}s",
         "stats_color": 5,
         "summary_template": (
-            "WPM: {stats.wpm}\n"
-            "CPM: {stats.cpm}\n"
-            "RAW WPM: {stats.raw_wpm}\n"
-            "RAW CPM: {stats.raw_cpm}\n"
-            "total seconds: {stats.total_seconds}\n"
-            "total minutes: {stats.total_minutes}\n"
+            "WPM: {stats.wpm:0.2f}\n"
+            "CPM: {stats.cpm:0.2f}\n"
+            "RAW WPM: {stats.raw_wpm:0.2f}\n"
+            "RAW CPM: {stats.raw_cpm:0.2f}\n"
+            "total seconds: {stats.total_seconds:0.2f}\n"
+            "total minutes: {stats.total_minutes:0.2f}\n"
             "correct words: {stats.correct_words}\n"
             "correct chars: {stats.correct_chars}\n"
             "incorrect words: {stats.incorrect_words}\n"
             "incorrect chars: {stats.incorrect_chars}\n"
             "total words: {stats.total_words}\n"
             "total chars: {stats.total_chars}\n"
-            "accuracy: {stats.accuracy}%"
+            "accuracy: {stats.accuracy:0.2f}%"
         ),
         "summary_datafile": "~/.cache/fasttyper/datafile.csv",
     }
