@@ -8,7 +8,6 @@ function ff() {
 	[[ ! -f $sfile ]] && curl -s $source_path | python3 -c "import sys, json; print('\n'.join(json.load(sys.stdin)['words']))" > $sfile
 	while true
 	do
-		shuf -n $amount $sfile | python3 -m fasttyper
-		sleep 1
+		shuf -n $amount $sfile | python3 -m fasttyper || break
 	done
 }

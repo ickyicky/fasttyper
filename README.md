@@ -49,13 +49,12 @@ function ff() {
 	[[ ! -f $sfile ]] && curl -s $source_path | python3 -c "import sys, json; print('\n'.join(json.load(sys.stdin)['words']))" > $sfile
 	while true
 	do
-		shuf -n $amount $sfile | python3 -m fasttyper
-		sleep 1
+		shuf -n $amount $sfile | python3 -m fasttyper || break
 	done
 }
 ```
 `ff 50 english_1k`
 
-This shell function shuffles N words from cached word list, and if given word list doesnt exist it download's it. It runs in loop, but does sleep 1s after each taken test (or interrupted!) so to exit loop just use CTRL+C twice: once to exit fasttyper, second time to exit loop on sleep.
+This shell function shuffles N words from cached word list, and if given word list doesnt exist it download's it. It runs in loop, but does exit from it if you exit fasttyper with CTRL+C.
 
 The above script is avalible for download from doc folder.
