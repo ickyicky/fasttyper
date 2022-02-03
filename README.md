@@ -35,7 +35,7 @@ You can use another similar projects set of words as well, for example to create
 
 `curl -s https://raw.githubusercontent.com/Miodec/monkeytype/master/static/languages/english.json | python3 -c "import sys, json; print('\n'.join(json.load(sys.stdin)['words']))" | shuf -n20 | python3 -m fasttyper`
 
-To exit program simply complete test or press CTRL+C.
+To exit you can either finish test, use `KeyboardInterrupt` (CTRL+C) or tap **tab** then **enter**.
 
 ## Example scripts
 
@@ -47,9 +47,13 @@ function ff() {
 	local sfile=~/.cache/fasttyper/$language
 	local source_path=https://raw.githubusercontent.com/Miodec/monkeytype/master/static/languages/$language.json
 	[[ ! -f $sfile ]] && curl -s $source_path | python3 -c "import sys, json; print('\n'.join(json.load(sys.stdin)['words']))" > $sfile
-	shuf -n $amount $sfile | python3 -m fasttyper
+	while true
+	do
+		shuf -n $amount $sfile | python3 -m fasttyper
+		sleep 1
+	done
 }
 ```
 `ff 50 english_1k`
 
-This shell function shuffles N words from cached word list, and if given word list doesnt exist it download's it.
+This shell function shuffles N words from cached word list, and if given word list doesnt exist it download's it. It runs in loop, but does sleep 1s after each taken test (or interrupted!) so to exit loop just use CTRL+C twice: once to exit fasttyper, second time to exit loop on sleep.
