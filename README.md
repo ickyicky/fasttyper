@@ -7,7 +7,7 @@ _Fasttyper_ is minimalistic typing test based on user provided exercising text. 
 
 # Installation
 
-_Fasttyper_ is currently maintained on [TestPyPi](https://test.pypi.org/) Python Package Index. To install package simpply use:
+_Fasttyper_ is currently maintained on [PyPi](https://pypi.org/) Python Package Index. To install package simpply use:
 
 `python3 -m pip install fasttyper`
 
