@@ -37,6 +37,10 @@ You can use another similar projects set of words as well, for example to create
 
 To exit you can either finish test, use `KeyboardInterrupt` (CTRL+C) or tap **tab** then **enter**. After you finish test, there will be summary printed, use enter to exit from it.
 
+# When backspace does wierd shiet
+
+Some terminal emulators send different values for key presses of backspace and ctrl+backspace. To fix it, simply add `b` flag to `python3 -m fasttyper`.
+
 ## Example scripts
 
 ```sh

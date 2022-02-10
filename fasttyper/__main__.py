@@ -19,7 +19,7 @@ import argparse
 import json
 
 
-def initialize(configmap, rbuffer):
+def initialize(configmap, rbuffer, backspace_debug):
     config = Config(configmap)
 
     reference_buffer = Buffer(rbuffer)
@@ -32,7 +32,7 @@ def initialize(configmap, rbuffer):
     reference_text = ReferenceText(config, text_box)
     stats_component = StatsComponent(config)
 
-    listener = Listener()
+    listener = Listener(backspace_debug)
     application = Application(listener, user_buffer, reference_buffer, config)
 
     interface = Interface(
@@ -67,6 +67,13 @@ def main():
         help="configuration file",
         default="~/.config/fasttyper/config.json",
     )
+    parser.add_argument(
+        "--unclutter-backspace",
+        "-b",
+        action="store_true",
+        help="unclutter backspace, when it raises ctrl+backspace instead",
+        default=False,
+    )
     args = parser.parse_args()
 
     if is_tty:
@@ -86,7 +93,7 @@ def main():
     except FileNotFoundError:
         configmap = {}
 
-    initialize(configmap, rbuffer)
+    initialize(configmap, rbuffer, args.unclutter_backspace)
 
 
 if __name__ == "__main__":
