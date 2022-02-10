@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="fasttyper",
-    version="1.3.4",
+    version="1.4.0",
     author="Piotr Domanski",
     author_email="pi.domanski@gmail.com",
     description="Minimalistic typing exercise",

@@ -77,6 +77,8 @@ class TextBox(TextComponent):
         self.maxy, self.maxx = None, None
         self.usedy, self.usedx = None, None
 
+        self.left_margin = config.get("left_margin_percentage")
+
     def clear(self):
         self.elements = []
 
@@ -105,7 +107,11 @@ class TextBox(TextComponent):
 
     @property
     def max_line_x(self):
-        return self.maxx - 1
+        return int(self.maxx * (100 - self.left_margin - self.left_margin) / 100) - 1
+
+    @property
+    def padding(self):
+        return " " * int(1 + self.left_margin * self.maxx / 100)
 
     def prepare_text_element(self, element):
         lines = []
@@ -150,11 +156,10 @@ class TextBox(TextComponent):
             lines[-1] = lines[-1][: -len(next_word)]
 
         lines = lines[: self.maxy - self.usedy]
-        return "\n".join(lines)
+        return ("\n" + self.padding).join(lines)
 
     def pain_element(self, screen, element):
         self.usedy, self.usedx = screen.getyx()
-        self.maxy, self.maxx = screen.getmaxyx()
         text = self.prepare_text_element(element)
         self.paint_text(screen, text, element.color)
 
@@ -162,6 +167,8 @@ class TextBox(TextComponent):
             self.cursor_component.update(screen)
 
     def paint(self, screen, application):
+        self.maxy, self.maxx = screen.getmaxyx()
+        self.paint_text(screen, self.padding, 0)
 
         for element in self.elements:
             self.pain_element(screen, element)
