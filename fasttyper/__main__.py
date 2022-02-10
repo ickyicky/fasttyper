@@ -6,6 +6,7 @@ from .components import (
     ReferenceText,
     StatsComponent,
     TextBox,
+    TopMargin,
 )
 from .listener import Listener
 from .buffer import UserBuffer, Buffer
@@ -24,6 +25,7 @@ def initialize(configmap, rbuffer):
     reference_buffer = Buffer(rbuffer)
     user_buffer = UserBuffer()
 
+    top_margin = TopMargin(config)
     cursor_component = CursorComponent(config)
     text_box = TextBox(config, cursor_component)
     user_input = UserInput(config, text_box)
@@ -35,7 +37,14 @@ def initialize(configmap, rbuffer):
 
     interface = Interface(
         application,
-        [user_input, reference_text, text_box, stats_component, cursor_component],
+        [
+            top_margin,
+            user_input,
+            reference_text,
+            text_box,
+            stats_component,
+            cursor_component,
+        ],
     )
     wrapper(interface)
 

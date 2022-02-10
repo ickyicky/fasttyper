@@ -44,6 +44,18 @@ class StatsComponent(TextComponent):
             self.paint_text(screen, text, self.color)
 
 
+class TopMargin(Base):
+    def __init__(self, config):
+        super().__init__()
+        self.height = config.get("top_margin_percentage") / 100
+
+    def paint(self, screen, application):
+        maxy, _ = screen.getmaxyx()
+        lines = int(self.height * maxy)
+        for line in range(lines):
+            screen.addstr("\n")
+
+
 class TextBox(TextComponent):
     """
     Wraps lines of text elements writing to it nicely

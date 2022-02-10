@@ -21,6 +21,7 @@ class Config:
             "accuracy: {stats.accuracy:0.2f}%"
         ),
         "summary_datafile": "~/.cache/fasttyper/datafile.csv",
+        "top_margin_percentage": 30,
     }
 
     def __init__(self, configmap):
