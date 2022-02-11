@@ -15,7 +15,8 @@ class CursorComponent(Base):
         self.cursor_position = screen.getyx()
 
     def paint(self, screen, application):
-        screen.move(*self.cursor_position)
+        if self.cursor_position:
+            screen.move(*self.cursor_position)
 
 
 class TextComponent(Base):
@@ -61,49 +62,24 @@ class TextBox(TextComponent):
     Wraps lines of text elements writing to it nicely
     """
 
-    class Element:
-        def __init__(self, text, color, triggers_cursor=False):
-            self.text = text
-            self.color = color
-            self.triggers_cursor = triggers_cursor
-            self.next = None
-
     def __init__(self, config, cursor_component):
         super().__init__()
         self.cursor_component = cursor_component
-
-        self.elements = []
 
         self.maxy, self.maxx = None, None
         self.usedy, self.usedx = None, None
 
         self.left_margin = config.get("left_margin_percentage")
 
-    def clear(self):
-        self.elements = []
+        self.valid_color = config.get("user_input_valid_color")
+        self.invalid_color = config.get("user_input_invalid_color")
+        self.color = config.get("reference_text_color")
 
+        self.lines_on_screen = config.get("lines_on_screen")
+
+    def clear(self):
         self.maxy, self.maxx = None, None
         self.usedy, self.usedx = None, None
-
-    def add_element(self, text, color, triggers_cursor=False):
-        element = self.Element(text, color, triggers_cursor)
-
-        if self.elements:
-            self.elements[-1].next = element
-
-        self.elements.append(element)
-
-    def find_first_word(self, element):
-        if element is None:
-            return ""
-
-        if len(element.text) == 0:
-            return self.find_first_word(element.next)
-
-        if not element.text[0].isalnum():
-            return ""
-
-        return element.text.split()[0] + " "
 
     @property
     def max_line_x(self):
@@ -113,92 +89,101 @@ class TextBox(TextComponent):
     def padding(self):
         return " " * int(1 + self.left_margin * self.maxx / 100)
 
-    def prepare_text_element(self, element):
+    def lines_to_display(self, application):
+        text = application.get_text()
+        valid_position = application.valid_user_text_position()
+        user_position = application.user_position()
+
         lines = []
         line = ""
         word = ""
-        next_word = self.find_first_word(element.next)
 
-        for char in element.text + next_word:
-            if char.isalnum():
-                word += char
-            elif char == "\n" or len(word) + len(line) + self.usedx >= self.max_line_x:
+        valid_pointer = (0, 0)
+        user_pointer = (0, 0)
+
+        for i, c in enumerate(text):
+            word += c
+
+            if len(line + word) > self.max_line_x:
                 lines.append(line)
-                word += " "
                 line = ""
-                line += word
-                word = ""
-                self.usedx = 0
-                if self.usedy >= self.maxy:
-                    break
-            else:
-                word += char
+
+            if not c.isalnum():
                 line += word
                 word = ""
 
-        if len(word) > 0:
-            if len(word) + len(line) + self.usedx >= self.max_line_x:
-                lines.append(line)
-                line = word
-            else:
-                line += word
+        if word:
+            line += word
 
-        if len(line) > 0:
+        if line:
             lines.append(line)
 
-        if len(lines) == 0 or (len(lines) == 1 and lines[0] == next_word):
-            return ""
+        position = 0
+        for i, l in enumerate(lines):
+            st, end = position, position + len(l)
+            if user_position >= st and user_position <= end:
+                user_pointer = (i, user_position - st)
+            if valid_position >= st and valid_position <= end:
+                valid_pointer = (i, valid_position - st)
+            position = end
 
-        if next_word:
-            last_line = lines[-1]
-            if len(last_line) == 0:
-                lines = lines[:-1]
-            lines[-1] = lines[-1][: -len(next_word)]
+        return lines, valid_pointer, user_pointer
 
-        lines = lines[: self.maxy - self.usedy]
-        return ("\n" + self.padding).join(lines)
-
-    def pain_element(self, screen, element):
-        self.usedy, self.usedx = screen.getyx()
-        text = self.prepare_text_element(element)
-        self.paint_text(screen, text, element.color)
-
-        if element.triggers_cursor:
+    def paint_line(self, i, line, valid_pointer, user_pointer, screen):
+        if i < valid_pointer[0]:
+            # easy, we are in written line
+            self.paint_text(screen, line, self.valid_color)
             self.cursor_component.update(screen)
+            return
+
+        if i > user_pointer[0]:
+            # easy, we are in reference line
+            self.paint_text(screen, line, self.color)
+            return
+
+        valid_text = ""
+        invalid_text = ""
+        invalid_start = 0
+
+        if i == valid_pointer[0]:
+            valid_text = line[: valid_pointer[1]]
+            invalid_start = valid_pointer[1]
+            invalid_text = line[valid_pointer[1] :]
+        if i == user_pointer[0]:
+            invalid_text = line[invalid_start : user_pointer[1]]
+
+        reference_text = line[len(invalid_text) + len(valid_text) :]
+
+        self.paint_text(screen, valid_text, self.valid_color)
+        self.paint_text(screen, invalid_text, self.invalid_color)
+        self.cursor_component.update(screen)
+        self.paint_text(screen, reference_text, self.color)
 
     def paint(self, screen, application):
         self.maxy, self.maxx = screen.getmaxyx()
-        self.paint_text(screen, self.padding, 0)
+        self.usedy, self.usedx = screen.getyx()
 
-        for element in self.elements:
-            self.pain_element(screen, element)
+        lines, valid_pointer, user_pointer = self.lines_to_display(application)
+
+        lines_fitting = min((self.maxy - self.usedy, self.lines_on_screen))
+        start = 0
+        end = len(lines)
+
+        if lines_fitting == 0:
+            raise Exception("Too small display!")
+
+        if lines_fitting <= len(lines):
+            previous_lines = 1 if lines_fitting > 2 else 0
+            next_lines = 1 if lines_fitting > 1 else 0
+            start = user_pointer[0] - previous_lines
+            end = user_pointer[0] + next_lines
+            if start == -1:
+                end += 1
+
+        for i, line in enumerate(lines):
+            if i >= start and i <= end:
+                screen.addstr(self.padding)
+                self.paint_line(i, line, valid_pointer, user_pointer, screen)
+                screen.addstr("\n")
 
         self.clear()
-
-
-class UserInput(Base):
-    def __init__(self, config, text_box):
-        super().__init__()
-        self.text_box = text_box
-        self.valid_color = config.get("user_input_valid_color")
-        self.invalid_color = config.get("user_input_invalid_color")
-
-    def paint(self, screen, application):
-        valid_text, invalid_text = application.get_user_text()
-
-        invalid_text = invalid_text.replace(" ", "_")
-
-        self.text_box.add_element(valid_text, self.valid_color)
-        self.text_box.add_element(invalid_text, self.invalid_color, True)
-
-
-class ReferenceText(Base):
-    def __init__(self, config, text_box):
-        super().__init__()
-        self.text_box = text_box
-        self.color = config.get("reference_text_color")
-
-    def paint(self, screen, application):
-        valid_user_text_position = application.valid_user_text_position()
-        reference_text = application.get_reference_text(valid_user_text_position)
-        self.text_box.add_element(reference_text, self.color)

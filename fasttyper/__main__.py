@@ -1,9 +1,7 @@
 from .application import Application
 from .interface import Interface
 from .components import (
-    UserInput,
     CursorComponent,
-    ReferenceText,
     StatsComponent,
     TextBox,
     TopMargin,
@@ -28,8 +26,6 @@ def initialize(configmap, rbuffer, backspace_debug):
     top_margin = TopMargin(config)
     cursor_component = CursorComponent(config)
     text_box = TextBox(config, cursor_component)
-    user_input = UserInput(config, text_box)
-    reference_text = ReferenceText(config, text_box)
     stats_component = StatsComponent(config)
 
     listener = Listener(backspace_debug)
@@ -39,8 +35,6 @@ def initialize(configmap, rbuffer, backspace_debug):
         application,
         [
             top_margin,
-            user_input,
-            reference_text,
             text_box,
             stats_component,
             cursor_component,

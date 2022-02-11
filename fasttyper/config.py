@@ -23,6 +23,7 @@ class Config:
         "summary_datafile": "~/.cache/fasttyper/datafile.csv",
         "top_margin_percentage": 30,
         "left_margin_percentage": 10,
+        "lines_on_screen": 3,
     }
 
     def __init__(self, configmap):

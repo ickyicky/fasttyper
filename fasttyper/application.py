@@ -29,13 +29,15 @@ class Application:
             return self.state.mistake_position
         return self.user_buffer.get_position()
 
-    def get_user_text(self):
-        text = self.user_buffer.get_matrix()
-        mistake_position = self.valid_user_text_position()
-        return text[:mistake_position], text[mistake_position:]
+    def user_position(self):
+        return self.user_buffer.get_position()
 
-    def get_reference_text(self, position):
-        return self.reference_buffer.get_matrix(position)
+    def get_text(self):
+        user_text = self.user_buffer.get_matrix()
+        reference_text = self.reference_buffer.get_matrix(
+            self.valid_user_text_position()
+        )
+        return user_text + reference_text
 
     def action(self, screen):
         try:
