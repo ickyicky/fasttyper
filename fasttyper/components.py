@@ -109,6 +109,7 @@ class TextBox(TextComponent):
                 line = ""
 
             if not c.isalnum():
+                word = str(word)[:-1] + " "
                 line += word
                 word = ""
 
@@ -153,6 +154,7 @@ class TextBox(TextComponent):
             invalid_text = line[invalid_start : user_pointer[1]]
 
         reference_text = line[len(invalid_text) + len(valid_text) :]
+        invalid_text = invalid_text.replace(" ", "_")
 
         self.paint_text(screen, valid_text, self.valid_color)
         self.paint_text(screen, invalid_text, self.invalid_color)
