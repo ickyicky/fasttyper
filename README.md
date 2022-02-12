@@ -64,7 +64,9 @@ Fasttyper by default looks for config file in: `$HOME/.config/fasttyper/config.j
 - **left_margin_percentage** - integer, percentage of screen used for left (and right) margin, by default 10
 - **lines_on_screen** - integer, number of lines to display on screen, by default 3
 
-Example config files:
+Example config file with all default values in avalibe [here](https://github.com/ickyicky/fasttyper/blob/main/doc/example_config.json).
+
+Other example config files:
 
 ```json
 {"top_margin_percentage": 40, "left_margin_percentage": 25}
