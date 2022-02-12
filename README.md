@@ -13,6 +13,36 @@ _Fasttyper_ is currently maintained on [PyPi](https://pypi.org/) Python Package 
 
 # Usage
 
+With installation of fasttyper you should have new executable - `fasttyper`. It takes two optional positional arguments, amount of words and language (like in monkeytype: english, english_1k etc).
+
+Avalibe options:
+
+```
+usage: fasttyper [-h] [--config FILE] [--unclutter-backspace] [--no-cursor] [amount] [language]
+
+positional arguments:
+  amount                Amount of words
+  language              Language
+
+options:
+  -h, --help            show this help message and exit
+  --config FILE, -c FILE
+                        configuration file
+  --unclutter-backspace, -b
+                        unclutter backspace, when it raises ctrl+backspace instead
+  --no-cursor, -n       disable cursos
+```
+
+I personally use alias:
+
+```
+alias ff='fasttyper -n`
+```
+
+because i don't like having cursor.
+
+# Usage as module, piping stuff, custom scripts etc
+
 _Fasttyper_ is ran as an python module, so to execute it simply type:
 
 `python3 -m fasttyper`

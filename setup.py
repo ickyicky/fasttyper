@@ -19,4 +19,9 @@ setup(
     ],
     packages=find_packages(),
     python_requires=">=3.6",
+    entry_points={
+        "console_scripts": [
+            "fasttyper=fasttyper.runner:runner",
+        ]
+    },
 )

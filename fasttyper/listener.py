@@ -14,7 +14,7 @@ class Action(enum.Enum):
 class Listener:
     def __init__(self, backspace_debug=False):
         self.tabbed = False
-        self.backspace_debug = backspace_debug
+        self.backspace_debug = not backspace_debug
 
     def handle_key(self, key):
         action = Action.invalid

@@ -58,9 +58,7 @@ class Application:
             input()
 
     def exit(self):
-        if self.finished or self.silent_exit:
-            sys.exit(0)
-        else:
+        if not self.finished and not self.silent_exit:
             sys.exit(1)
 
 
