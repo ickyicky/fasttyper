@@ -71,7 +71,7 @@ Example config files:
 ```
 
 ```json
-{"user_input_valid_color: 5}
+{"user_input_valid_color": 5}
 ```
 
 # Usage as module, piping stuff, custom scripts etc
