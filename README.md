@@ -51,6 +51,29 @@ To abandon test and start brand new one, press TAB and then ENTER.
 
 To kill application (exit) press CTRL+C.
 
+# Configuring
+
+Fasttyper by default looks for config file in: `$HOME/.config/fasttyper/config.json`. You can provide different location for config file with `--config` argument, for example: `--config=~/.fasttyper.json`. Config has to be a json dict. Avalibe keys:
+
+- **user_input_valid_color** - integer, terminal color for valid text, by default it is 3
+- **user_input_invalid_color** - integer, terminal color for invalid text, by default it is 2
+- **reference_text_color** - integer, terminal color for reference text, by default it is 8
+- **stats_color** - integer, terminal color for stats text, by default it is 5
+- **summary_datafile** - datafile storing all stats, by default it is ~/.cache/fasttyper/datafile.csv
+- **top_margin_percentage** - integer, percentage of screen used for top margin, by default 30
+- **left_margin_percentage** - integer, percentage of screen used for left (and right) margin, by default 10
+- **lines_on_screen** - integer, number of lines to display on screen, by default 3
+
+Example config files:
+
+```json
+{"top_margin_percentage": 40, "left_margin_percentage": 25}
+```
+
+```json
+{"user_input_valid_color: 5}
+```
+
 # Usage as module, piping stuff, custom scripts etc
 
 _Fasttyper_ is ran as an python module, so to execute it simply type:
