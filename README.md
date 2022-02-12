@@ -13,9 +13,13 @@ _Fasttyper_ is currently maintained on [PyPi](https://pypi.org/) Python Package 
 
 # Usage
 
-With installation of fasttyper you should have new executable - `fasttyper`. It takes two optional positional arguments, amount of words and language (like in monkeytype: english, english_1k etc).
+With installation of fasttyper you should have new executable - `fasttyper`. It takes two optional positional arguments, amount of words and language (like in [Monkeytype's](https://github.com/Miodec/monkeytype): english, english_1k etc). Default amount of words is 25 and language is english. To run fasttyper simply call:
 
-Avalibe options:
+```bash
+fasttyper
+```
+
+from command line. There are some avalibe options:
 
 ```
 usage: fasttyper [-h] [--config FILE] [--unclutter-backspace] [--no-cursor] [amount] [language]
@@ -39,7 +43,13 @@ I personally use alias:
 alias ff='fasttyper -n`
 ```
 
-because i don't like having cursor.
+because i don't like having cursor and i am too lazy to type fasttyper so i just type ff :)
+
+# Running next test and stopping application
+
+To abandon test and start brand new one, press TAB and then ENTER.
+
+To kill application (exit) press CTRL+C.
 
 # Usage as module, piping stuff, custom scripts etc
 
