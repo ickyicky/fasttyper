@@ -39,7 +39,11 @@ To exit you can either finish test, use `KeyboardInterrupt` (CTRL+C) or tap **ta
 
 # When backspace does wierd shiet
 
-Some terminal emulators send different values for key presses of backspace and ctrl+backspace. To fix it, simply add `b` flag to `python3 -m fasttyper`.
+Some terminal emulators send different values for key presses of backspace and ctrl+backspace. To fix it, simply add `b` flag like that: `python3 -m fasttyper -b`.
+
+# Hiding cursor
+
+To hide the cursor, simply add `n` flag like that: `python3 -m fasttyper -n`.
 
 ## Example scripts
 

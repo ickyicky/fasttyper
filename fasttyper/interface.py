@@ -2,9 +2,10 @@ import curses
 
 
 class Interface:
-    def __init__(self, application, components):
+    def __init__(self, application, components, no_cursor=False):
         self.application = application
         self.components = components
+        self.no_cursor = no_cursor
 
     def init_colors(self):
         assert curses.has_colors()
@@ -29,6 +30,9 @@ class Interface:
         """
         self.init(screen)
         self.application.start()
+
+        if self.no_cursor:
+            curses.curs_set(0)
 
         while self.application.running():
             self.update(screen)

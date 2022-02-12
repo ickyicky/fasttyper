@@ -17,7 +17,7 @@ import argparse
 import json
 
 
-def initialize(configmap, rbuffer, backspace_debug):
+def initialize(configmap, rbuffer, backspace_debug, no_cursor):
     config = Config(configmap)
 
     reference_buffer = Buffer(rbuffer)
@@ -39,6 +39,7 @@ def initialize(configmap, rbuffer, backspace_debug):
             stats_component,
             cursor_component,
         ],
+        no_cursor,
     )
     wrapper(interface)
 
@@ -68,6 +69,13 @@ def main():
         help="unclutter backspace, when it raises ctrl+backspace instead",
         default=False,
     )
+    parser.add_argument(
+        "--no-cursor",
+        "-n",
+        action="store_true",
+        help="disable cursos",
+        default=False,
+    )
     args = parser.parse_args()
 
     if is_tty:
@@ -87,7 +95,7 @@ def main():
     except FileNotFoundError:
         configmap = {}
 
-    initialize(configmap, rbuffer, args.unclutter_backspace)
+    initialize(configmap, rbuffer, args.unclutter_backspace, args.no_cursor)
 
 
 if __name__ == "__main__":
