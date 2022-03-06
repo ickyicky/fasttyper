@@ -44,6 +44,15 @@ class WindowComponent:
     def refresh(self):
         self._window.refresh()
 
+    def update_cursor(self):
+        self.cursor_x = self.current_line
+        past_words = self.lines[self.current_line][: self.word_index]
+        self.cursor_y = (
+            sum([len(w) for w in past_words])
+            + len(past_words)
+            + self.buffer.current_char
+        )
+
 
 class BorderedBox(WindowComponent):
     """
@@ -92,6 +101,7 @@ class BufferDependentComponent(BorderedBox):
         self.buffer = None
         self.last_hidden_word = 0
         self.lines = [[] for _ in range(self.height)]
+        self.should_repaint = [False for _ in range(self.height)]
 
         from .buffer import CharType
 
@@ -112,6 +122,9 @@ class BufferDependentComponent(BorderedBox):
         return sum([len(w) for w in self.lines[index]]) + spaces
 
     def paint_line(self, line_nr):
+        self.move(line_nr, 0)
+        self._window.clrtoeol()
+
         pos = 0
 
         for i, word in enumerate(self.lines[line_nr]):
@@ -132,6 +145,9 @@ class BufferDependentComponent(BorderedBox):
         for i in range(start_idx, self.buffer.total_words):
             word = self.buffer.get_word(i)
 
+            if len(word) > self.width:
+                word = word[:width]
+
             if self.line_len(line_nr) + len(word) + 1 > self.width:
                 self.paint_line(line_nr)
                 line_nr += 1
@@ -144,14 +160,44 @@ class BufferDependentComponent(BorderedBox):
         self.paint_line(line_nr)
         self.buffered_lines = self.height
 
-    def update_cursor(self):
-        self.cursor_x = self.current_line
-        past_words = self.lines[self.current_line][: self.word_index]
-        self.cursor_y = (
-            sum([len(w) for w in past_words])
-            + len(past_words)
-            + self.buffer.current_char
-        )
+    def reorganize_words(self, line_nr=None, move_active=False):
+        move_active = move_active or line_nr is None
+        line_nr = line_nr or self.current_line
+
+        self.should_repaint[line_nr] = True
+        if line_nr + 1 < self.height:
+            self.should_repaint[line_nr + 1] = True
+
+        should_organize_next = False
+
+        while self.line_len(line_nr) > self.width:
+            last_word = self.lines[line_nr][-1]
+            self.lines[line_nr] = self.lines[line_nr][:-1]
+
+            if line_nr + 1 < self.height:
+                self.lines[line_nr + 1] = [last_word] + self.lines[line_nr + 1]
+                if self.line_len(line_nr + 1) > self.width:
+                    should_organize_next = True
+
+        if move_active and self.word_index >= len(self.lines[self.current_line]):
+            self.word_index = 0
+            self.current_line += 1
+
+        if should_organize_next:
+            self.reorganize_words(line_nr + 1, move_active)
+
+    def lines_to_paint(self):
+        result = {self.current_line}
+
+        if any(self.should_repaint):
+            result = {
+                i
+                for i in range(self.height)
+                if i == self.current_line or self.should_repaint[i]
+            }
+            self.should_repaint = [False for _ in range(self.height)]
+
+        return result
 
     def update_current_word(self, word_index):
         """
@@ -166,8 +212,8 @@ class BufferDependentComponent(BorderedBox):
         )
         new_len = len(self.lines[self.current_line][self.word_index])
 
-        if old_len != new_len:
-            pass
+        if old_len != new_len and self.line_len(self.current_line) > self.width:
+            self.reorganize_words()
 
         while word_index > self.current_word_idx:
             self.word_index += 1
@@ -177,9 +223,6 @@ class BufferDependentComponent(BorderedBox):
                 self.current_line += 1
 
             self.current_word_idx += 1
-            self.lines[self.current_line][self.word_index] = self.buffer.get_word(
-                self.current_word_idx
-            )
 
         while word_index < self.current_word_idx:
             self.word_index -= 1
@@ -189,9 +232,6 @@ class BufferDependentComponent(BorderedBox):
                 self.word_index = len(self.lines[self.current_line] - 1)
 
             self.current_word_idx -= 1
-            self.lines[self.current_line][self.word_index] = self.buffer.get_word(
-                self.current_word_idx
-            )
 
         self.update_cursor()
 
@@ -231,6 +271,9 @@ class TextBox(BorderWithImprintedStats):
             self.fill_lines()
 
         self.paint_stats()
-        self.paint_line(self.current_line)
+
+        for line in self.lines_to_paint():
+            self.paint_line(line)
+
         self.move(self.cursor_x, self.cursor_y)
         self.refresh()
