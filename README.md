@@ -1,5 +1,5 @@
 # fasttyper
-[![](https://github.com/ickyicky/fasttyper/blob/main/doc/example.gif?raw=true)](https://github.com/ickyicky/fasttyper)
+[![](https://github.com/ickyicky/fasttyper/blob/main/doc/demo.gif?raw=true)](https://github.com/ickyicky/fasttyper)
 
 # About
 
@@ -100,7 +100,7 @@ You can use another similar projects set of words as well, for example to create
 
 `curl -s https://raw.githubusercontent.com/Miodec/monkeytype/master/static/languages/english.json | python3 -c "import sys, json; print('\n'.join(json.load(sys.stdin)['words']))" | shuf -n20 | python3 -m fasttyper`
 
-To exit you can either finish test, use `KeyboardInterrupt` (CTRL+C) or tap **tab** then **enter**. After you finish test, there will be summary printed, use enter to exit from it.
+To exit you can either finish test, use `KeyboardInterrupt` (CTRL+C) or tap **tab**. After you finish test, there will be summary printed, use enter to exit from it.
 
 # When backspace does wierd shiet
 
