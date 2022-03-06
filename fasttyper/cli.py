@@ -50,7 +50,7 @@ def get_parser():
         "-c",
         metavar="FILE",
         help="configuration file",
-        default="~/.config/fasttyper/config_debug.json",
+        default="~/.config/fasttyper/config.json",
     )
     parser.add_argument(
         "--unclutter-backspace",

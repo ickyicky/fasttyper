@@ -102,6 +102,7 @@ class BufferDependentComponent(BorderedBox):
         self.last_hidden_word = 0
         self.lines = [[] for _ in range(self.height)]
         self.should_repaint = [False for _ in range(self.height)]
+        self.historical_lines = []
 
         from .buffer import CharType
 
@@ -113,6 +114,8 @@ class BufferDependentComponent(BorderedBox):
 
         self.current_word_idx = 0
         self.current_line, self.word_index = 0, 0
+
+        self.prefered_line = min(self.height - 1, int(((self.height - 1) / 2)))
 
     def set_buffer(self, buffer):
         self.buffer = buffer
@@ -144,12 +147,12 @@ class BufferDependentComponent(BorderedBox):
 
         for i in range(start_idx, self.buffer.total_words):
             word = self.buffer.get_word(i)
+            self.should_repaint[line_nr] = True
 
             if len(word) > self.width:
                 word = word[: self.width - 1]
 
             if self.line_len(line_nr) + len(word) + 1 > self.width:
-                self.should_repaint[line_nr] = True
                 line_nr += 1
 
                 if line_nr >= self.height:
@@ -157,7 +160,6 @@ class BufferDependentComponent(BorderedBox):
 
             self.lines[line_nr].append(word)
 
-        self.should_repaint[line_nr] = True
         self.buffered_lines = self.height
 
     def reorganize_words(self, line_nr=None, move_active=False):
@@ -199,6 +201,27 @@ class BufferDependentComponent(BorderedBox):
 
         return result
 
+    def shift_lines_up(self):
+        self.historical_lines.append(self.lines[0])
+        self.last_hidden_word += len(self.lines[0])
+        self.lines = self.lines[1:]
+        self.lines.append([])
+
+        self.should_repaint = [True for _ in range(self.height)]
+        self.current_line -= 1
+        self.buffered_lines -= 1
+
+    def shift_lines_down(self):
+        """
+        Load historical lines and boom
+        """
+        self.lines = [self.historical_lines[-1]] + self.lines[:-1]
+        self.historical_lines = self.historical_lines[:-1]
+        self.last_hidden_word -= len(self.lines[0])
+
+        self.should_repaint = [True for _ in range(self.height)]
+        self.current_line += 1
+
     def update_current_word(self, word_index):
         """
         This is called by buffer. It signals that user changed its state.
@@ -229,9 +252,14 @@ class BufferDependentComponent(BorderedBox):
 
             if self.word_index == -1:
                 self.current_line -= 1
-                self.word_index = len(self.lines[self.current_line] - 1)
+                self.word_index = len(self.lines[self.current_line]) - 1
 
             self.current_word_idx -= 1
+
+        while self.current_line > self.prefered_line or self.current_line == self.height:
+            self.shift_lines_up()
+        while (self.current_line < self.prefered_line or self.current_line < 0) and self.last_hidden_word > 0:
+            self.shift_lines_down()
 
         self.update_cursor()
 
@@ -251,7 +279,7 @@ class BorderWithImprintedStats(BufferDependentComponent):
     def paint_stats(self):
         text = self.stats_template.format(stats=self.buffer.stats)
         if len(text) < self.width - 2:
-            self.paint_text(self.stats_row, 2, text, self.stats_color)
+            self.paint_text(self.stats_row, 2, text + " " * (self.width - 2 - len(text)), self.stats_color)
 
 
 class TextBox(BorderWithImprintedStats):
