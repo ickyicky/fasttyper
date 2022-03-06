@@ -149,7 +149,7 @@ class BufferDependentComponent(BorderedBox):
                 word = word[:width]
 
             if self.line_len(line_nr) + len(word) + 1 > self.width:
-                self.paint_line(line_nr)
+                self.should_repaint[line_nr] = True
                 line_nr += 1
 
                 if line_nr >= self.height:
