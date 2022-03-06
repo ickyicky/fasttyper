@@ -7,13 +7,20 @@ import pathlib
 
 class Stats:
     def __init__(self):
-        self.correct_words = 0
         self.correct_chars = 0
-        self.incorrect_words = 0
         self.incorrect_chars = 0
 
         self.start_dtime = None
         self.stop_dtime = None
+
+        self.buffer = None
+        self.finished = False
+
+    def set_buffer(self, buffer):
+        self.buffer = buffer
+
+    def running(self):
+        return self.stop_dtime is None
 
     def signal_running(self):
         if self.start_dtime is None:
@@ -27,8 +34,17 @@ class Stats:
         self.signal_running()
         self.incorrect_chars += 1
 
-    def signal_stop(self):
+    def signal_stop(self, finished=False):
         self.stop_dtime = datetime.now()
+        self.finished = finished
+
+    @property
+    def correct_words(self):
+        return self.buffer.correct_words
+
+    @property
+    def incorrect_words(self):
+        return self.buffer.incorrect_words
 
     @property
     def total_seconds(self):

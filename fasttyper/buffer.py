@@ -21,6 +21,7 @@ class Buffer:
         self.stats = stats
 
         self.text_box.set_buffer(self)
+        self.stats.set_buffer(self)
 
     def _write(self, char):
         while self.current_word >= len(self.user_words):
@@ -45,10 +46,18 @@ class Buffer:
         self.user_words[self.current_word] += char
         self.current_char += 1
 
+        if self.current_word == self.total_words - 1 and self.current_char >= len(
+            self.reference_words[self.current_word]
+        ):
+            self.stats.signal_stop(True)
+
     def _next_word(self):
         self.current_word += 1
         self.current_char = 0
         self.stats.signal_valid()  # space is a char after all
+
+        if self.current_word >= self.total_words:
+            self.stats.signal_stop(True)
 
     def _del_char(self):
         try:
@@ -81,7 +90,8 @@ class Buffer:
         elif action == Action.del_word:
             self._del_word()
 
-        self.text_box.update_current_word(self.current_word)
+        if self.stats.running():
+            self.text_box.update_current_word(self.current_word)
 
     def get_word(self, index):
         reference_word = self.reference_words[index]
@@ -100,3 +110,29 @@ class Buffer:
         word += [(c, CharType.reference) for c in reference_word[len(word) :]]
 
         return word
+
+    @property
+    def correct_words(self):
+        count = 0
+
+        for i, w in enumerate(self.user_words):
+            if i == self.total_words:
+                break
+
+            if w == self.reference_words[i]:
+                count += 1
+
+        return count
+
+    @property
+    def incorrect_words(self):
+        count = 0
+
+        for i, w in enumerate(self.user_words):
+            if i == self.total_words:
+                break
+
+            if w != self.reference_words[i]:
+                count += 1
+
+        return count

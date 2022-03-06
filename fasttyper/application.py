@@ -7,14 +7,17 @@ class Application:
         self.listener = listener
         self.buffer = buffer
         self.config = config
-        self.finished = False
         self.silent_exit = False
+
+    @property
+    def finished(self):
+        return self.buffer.stats.finished
 
     def start(self):
         pass
 
     def running(self):
-        return True
+        return self.buffer.stats.running()
 
     def action(self, screen):
         try:
@@ -23,13 +26,16 @@ class Application:
         except StoppingSignal as e:
             if e.silent:
                 self.silent_exit = True
+            self.buffer.stats.signal_stop()
 
     def summarize(self):
         if self.finished:
             self.buffer.stats.summarize(self.config.get("summary_template"))
             self.buffer.stats.export_to_datafile(self.config.get("summary_datafile"))
             try:
-                readchar.readchar()
+                c = readchar.readchar()
+                if ord(c) == 3:
+                    raise KeyboardInterrupt
             except KeyboardInterrupt:
                 sys.exit(1)
 
