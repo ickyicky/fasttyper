@@ -256,9 +256,13 @@ class BufferDependentComponent(BorderedBox):
 
             self.current_word_idx -= 1
 
-        while self.current_line > self.prefered_line or self.current_line == self.height:
+        while (
+            self.current_line > self.prefered_line or self.current_line == self.height
+        ):
             self.shift_lines_up()
-        while (self.current_line < self.prefered_line or self.current_line < 0) and self.last_hidden_word > 0:
+        while (
+            self.current_line < self.prefered_line or self.current_line < 0
+        ) and self.last_hidden_word > 0:
             self.shift_lines_down()
 
         self.update_cursor()
@@ -279,7 +283,12 @@ class BorderWithImprintedStats(BufferDependentComponent):
     def paint_stats(self):
         text = self.stats_template.format(stats=self.buffer.stats)
         if len(text) < self.width - 2:
-            self.paint_text(self.stats_row, 2, text + " " * (self.width - 2 - len(text)), self.stats_color)
+            self.paint_text(
+                self.stats_row,
+                2,
+                text + " " * (self.width - 2 - len(text)),
+                self.stats_color,
+            )
 
 
 class TextBox(BorderWithImprintedStats):
