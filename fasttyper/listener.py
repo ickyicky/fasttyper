@@ -1,5 +1,10 @@
 import enum
+import string
 from .application import StoppingSignal
+
+
+WHITE = [ord(c) for c in string.whitespace]
+TAB = ord("\t")
 
 
 class Action(enum.Enum):
@@ -13,43 +18,36 @@ class Action(enum.Enum):
 
 class Listener:
     def __init__(self, backspace_debug=False):
-        self.tabbed = False
         self.backspace_debug = not backspace_debug
+
+    def action_for_key(self, key):
+        if (self.backspace_debug and key == 263) or (
+            not self.backspace_debug and key == 127
+        ):
+            return Action.del_char
+
+        if (self.backspace_debug and key == 8) or (
+            not self.backspace_debug and key == 263
+        ):
+            return Action.del_word
+
+        if key == TAB:
+            raise StoppingSignal(silent=True)
+
+        if key in WHITE:
+            return Action.add_space
+
+        return Action.add_char
 
     def handle_key(self, key):
         action = Action.invalid
 
-        if key == "\t":
-            self.tabbed = True
-        elif key == "\n" and self.tabbed:
-            raise StoppingSignal(silent=True)
-        elif self.backspace_debug and key == chr(8):
-            action = Action.del_word
-            self.tabbed = False
-        elif key == 263 and self.backspace_debug:
-            action = Action.del_char
-            self.tabbed = False
-        elif key == 263:
-            action = Action.del_word
-            self.tabbed = False
-        elif isinstance(key, int):
-            self.tabbed = False
-        elif key in chr(127):
-            action = Action.del_char
-            self.tabbed = False
-        elif key == " ":
-            action = Action.add_space
-            self.tabbed = False
-        elif key == "\n":
-            action = Action.add_newline
-            self.tabbed = False
-        elif key.isprintable():
-            action = Action.add_char
-            self.tabbed = False
-        else:
-            self.tabbed = False
+        if isinstance(key, str):
+            key = ord(key)
 
-        return action, key
+        action = self.action_for_key(key)
+
+        return action, chr(key)
 
     def listen(self, screen):
         try:

@@ -1,4 +1,5 @@
 import sys
+import readchar
 
 
 class Application:
@@ -55,7 +56,10 @@ class Application:
         if self.finished:
             self.stats.summarize(self.config.get("summary_template"))
             self.stats.export_to_datafile(self.config.get("summary_datafile"))
-            input()
+            try:
+                readchar.readchar()
+            except KeyboardInterrupt:
+                sys.exit(1)
 
     def exit(self):
         if not self.finished and not self.silent_exit:
