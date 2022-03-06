@@ -157,7 +157,7 @@ class BufferDependentComponent(BorderedBox):
 
             self.lines[line_nr].append(word)
 
-        self.paint_line(line_nr)
+        self.should_repaint[line_nr] = True
         self.buffered_lines = self.height
 
     def reorganize_words(self, line_nr=None, move_active=False):
