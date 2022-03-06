@@ -47,7 +47,7 @@ because i don't like having cursor and i am too lazy to type fasttyper so i just
 
 # Running next test and stopping application
 
-To abandon test and start brand new one, press TAB and then ENTER.
+To abandon test and start brand new one, press TAB.
 
 To kill application (exit) press CTRL+C.
 
