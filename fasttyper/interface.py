@@ -19,10 +19,8 @@ class Interface:
         self.init_colors()
 
     def update(self, screen):
-        screen.clear()
         for component in self.components:
             component.paint(screen, self.application)
-        screen.refresh()
 
     def __call__(self, screen):
         """

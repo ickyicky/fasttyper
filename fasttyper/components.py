@@ -1,191 +1,236 @@
 import curses
 
 
-class Base:
+class WindowComponent:
+    """
+    Basic text component printing inside window
+    """
+
+    def __init__(self, config):
+        self._window = None
+        self._height = None
+        self._width = None
+        self._begin_x = None
+        self._begin_y = None
+
+        self.cursor_x, self.cursor_y = 0, 0
+
+    def update_size(self, height, width, begin_x, begin_y):
+        self._height = height
+        self._width = width
+        self._begin_x = begin_x
+        self._begin_y = begin_y
+
+    def init_window(self):
+        self._window = curses.newwin(
+            self._height,
+            self._width,
+            self._begin_y,
+            self._begin_x,
+        )
+
+    def set_box(self, i):
+        self._window.box(i, i)
+
+    def paint_text(self, row, col, text, color):
+        self._window.addstr(row, col, text, curses.color_pair(color))
+
+    def move(self, x, y):
+        self._window.move(x, y)
+
     def paint(self, screen, application):
         pass
 
+    def refresh(self):
+        self._window.refresh()
 
-class CursorComponent(Base):
+
+class BorderedBox(WindowComponent):
+    """
+    Adds border to WindowComponent
+    """
+
     def __init__(self, config):
-        super().__init__()
-        self.cursor_position = None
+        super().__init__(config)
 
-    def update(self, screen):
-        self.cursor_position = screen.getyx()
+        self.maxy, self.maxx = None, None
 
-    def paint(self, screen, application):
-        if self.cursor_position:
-            screen.move(*self.cursor_position)
+        self.pos_y = config.get("top_margin_percentage") / 100
+        self.pos_x = config.get("left_margin_percentage") / 100
+        self.height = config.get("lines_on_screen")
+        self.width = None
 
+    def paint_text(self, row, col, text, color):
+        super().paint_text(row + 1, col + 1, text, color)
 
-class TextComponent(Base):
-    def paint_text(self, screen, text, color):
-        screen.addstr(text, curses.color_pair(color))
-
-
-class StatsComponent(TextComponent):
-    def __init__(self, config):
-        super().__init__()
-        self.color = config.get("stats_color")
-        self.template = config.get("stats_template")
+    def move(self, x, y):
+        super().move(x + 1, y + 1)
 
     def init(self, screen, application):
-        super().init(screen, application)
+        self.width = int(self.maxx * (1 - 2 * self.pos_x))
+        self.update_size(
+            self.height + 2,
+            self.width + 2,
+            int(self.pos_x * self.maxx) - 1,
+            int(self.pos_y * self.maxy) - 1,
+        )
+        self.init_window()
+        self.set_box(1)
 
-    def paint(self, screen, application):
-        usedy, _ = screen.getyx()
-        maxy, _ = screen.getmaxyx()
-
-        text = self.template.format(stats=application.stats)
-
-        texty = len(text.splitlines())
-
-        if texty + usedy + 1 < maxy:
-            self.paint_text(screen, text, self.color)
+        screen.refresh()
 
 
-class TopMargin(Base):
+class BufferDependentComponent(BorderedBox):
+    """
+    Adds content source from buffer
+    """
+
     def __init__(self, config):
-        super().__init__()
-        self.height = config.get("top_margin_percentage") / 100
+        super().__init__(config)
+
+        self.buffered_lines = 0
+        self.buffer = None
+        self.last_hidden_word = 0
+        self.lines = [[] for _ in range(self.height)]
+
+        from .buffer import CharType
+
+        self.chtype_mapper = {
+            CharType.valid: config.get("user_input_valid_color"),
+            CharType.invalid: config.get("user_input_invalid_color"),
+            CharType.reference: config.get("reference_text_color"),
+        }
+
+        self.current_word_idx = 0
+        self.current_line, self.word_index = 0, 0
+
+    def set_buffer(self, buffer):
+        self.buffer = buffer
+
+    def line_len(self, index):
+        spaces = max(len(self.lines[index]) - 1, 0)
+        return sum([len(w) for w in self.lines[index]]) + spaces
+
+    def paint_line(self, line_nr):
+        pos = 0
+
+        for i, word in enumerate(self.lines[line_nr]):
+            for c in word:
+                self.paint_text(line_nr, pos, c[0], self.chtype_mapper[c[1]])
+                pos += 1
+
+            if i != len(self.lines[line_nr]):
+                self.paint_text(line_nr, pos, " ", 0)
+                pos += 1
+
+    def fill_lines(self):
+        line_nr = self.buffered_lines
+        start_idx = self.last_hidden_word + sum(
+            [len(line) for line in self.lines[:line_nr]]
+        )
+
+        for i in range(start_idx, self.buffer.total_words):
+            word = self.buffer.get_word(i)
+
+            if self.line_len(line_nr) + len(word) + 1 > self.width:
+                self.paint_line(line_nr)
+                line_nr += 1
+
+                if line_nr >= self.height:
+                    break
+
+            self.lines[line_nr].append(word)
+
+        self.paint_line(line_nr)
+        self.buffered_lines = self.height
+
+    def update_cursor(self):
+        self.cursor_x = self.current_line
+        past_words = self.lines[self.current_line][: self.word_index]
+        self.cursor_y = (
+            sum([len(w) for w in past_words])
+            + len(past_words)
+            + self.buffer.current_char
+        )
+
+    def update_current_word(self, word_index):
+        """
+        This is called by buffer. It signals that user changed its state.
+
+        First, active word is updated. It changes on added char or deleted word.
+        """
+
+        old_len = len(self.lines[self.current_line][self.word_index])
+        self.lines[self.current_line][self.word_index] = self.buffer.get_word(
+            self.current_word_idx
+        )
+        new_len = len(self.lines[self.current_line][self.word_index])
+
+        if old_len != new_len:
+            pass
+
+        while word_index > self.current_word_idx:
+            self.word_index += 1
+
+            if self.word_index >= len(self.lines[self.current_line]):
+                self.word_index = 0
+                self.current_line += 1
+
+            self.current_word_idx += 1
+            self.lines[self.current_line][self.word_index] = self.buffer.get_word(
+                self.current_word_idx
+            )
+
+        while word_index < self.current_word_idx:
+            self.word_index -= 1
+
+            if self.word_index == -1:
+                self.current_line -= 1
+                self.word_index = len(self.lines[self.current_line] - 1)
+
+            self.current_word_idx -= 1
+            self.lines[self.current_line][self.word_index] = self.buffer.get_word(
+                self.current_word_idx
+            )
+
+        self.update_cursor()
+
+
+class BorderWithImprintedStats(BufferDependentComponent):
+    """
+    Imprints stats on one of borders
+    """
+
+    def __init__(self, config):
+        super().__init__(config)
+
+        self.stats_template = config.get("stats_template").replace("\n", " ")
+        self.stats_color = config.get("stats_color")
+        self.stats_row = -1 if config.get("stats_position") == "top" else self.height
+
+    def paint_stats(self):
+        text = self.stats_template.format(stats=self.buffer.stats)
+        if len(text) < self.width - 2:
+            self.paint_text(self.stats_row, 2, text, self.stats_color)
+
+
+class TextBox(BorderWithImprintedStats):
+    """
+    Calls all inherited paint functions and inits windows
+    """
+
+    def __init__(self, config):
+        super().__init__(config)
 
     def paint(self, screen, application):
-        maxy, _ = screen.getmaxyx()
-        lines = int(self.height * maxy)
-        for line in range(lines):
-            screen.addstr("\n")
+        if self._window is None:
+            self.maxy, self.maxx = screen.getmaxyx()
+            self.init(screen, application)
 
+        if self.buffered_lines < self.height:
+            self.fill_lines()
 
-class TextBox(TextComponent):
-    """
-    Wraps lines of text elements writing to it nicely
-    """
-
-    def __init__(self, config, cursor_component):
-        super().__init__()
-        self.cursor_component = cursor_component
-
-        self.maxy, self.maxx = None, None
-        self.usedy, self.usedx = None, None
-
-        self.left_margin = config.get("left_margin_percentage")
-
-        self.valid_color = config.get("user_input_valid_color")
-        self.invalid_color = config.get("user_input_invalid_color")
-        self.color = config.get("reference_text_color")
-
-        self.lines_on_screen = config.get("lines_on_screen")
-
-    def clear(self):
-        self.maxy, self.maxx = None, None
-        self.usedy, self.usedx = None, None
-
-    @property
-    def max_line_x(self):
-        return int(self.maxx * (100 - self.left_margin - self.left_margin) / 100) - 1
-
-    @property
-    def padding(self):
-        return " " * int(1 + self.left_margin * self.maxx / 100)
-
-    def lines_to_display(self, application):
-        text = application.get_text()
-        valid_position = application.valid_user_text_position()
-        user_position = application.user_position()
-
-        lines = []
-        line = ""
-        word = ""
-
-        valid_pointer = (0, 0)
-        user_pointer = (0, 0)
-
-        for i, c in enumerate(text):
-            word += c
-
-            if len(line + word) > self.max_line_x:
-                lines.append(line)
-                line = ""
-
-            if not c.isalnum():
-                word = str(word)[:-1] + " "
-                line += word
-                word = ""
-
-        if word:
-            line += word
-
-        if line:
-            lines.append(line)
-
-        position = 0
-        for i, l in enumerate(lines):
-            st, end = position, position + len(l)
-            if user_position >= st and user_position <= end:
-                user_pointer = (i, user_position - st)
-            if valid_position >= st and valid_position <= end:
-                valid_pointer = (i, valid_position - st)
-            position = end
-
-        return lines, valid_pointer, user_pointer
-
-    def paint_line(self, i, line, valid_pointer, user_pointer, screen):
-        if i < valid_pointer[0]:
-            # easy, we are in written line
-            self.paint_text(screen, line, self.valid_color)
-            self.cursor_component.update(screen)
-            return
-
-        if i > user_pointer[0]:
-            # easy, we are in reference line
-            self.paint_text(screen, line, self.color)
-            return
-
-        valid_text = ""
-        invalid_text = ""
-        invalid_start = 0
-
-        if i == valid_pointer[0]:
-            valid_text = line[: valid_pointer[1]]
-            invalid_start = valid_pointer[1]
-            invalid_text = line[valid_pointer[1] :]
-        if i == user_pointer[0]:
-            invalid_text = line[invalid_start : user_pointer[1]]
-
-        reference_text = line[len(invalid_text) + len(valid_text) :]
-        invalid_text = invalid_text.replace(" ", "_")
-
-        self.paint_text(screen, valid_text, self.valid_color)
-        self.paint_text(screen, invalid_text, self.invalid_color)
-        self.cursor_component.update(screen)
-        self.paint_text(screen, reference_text, self.color)
-
-    def paint(self, screen, application):
-        self.maxy, self.maxx = screen.getmaxyx()
-        self.usedy, self.usedx = screen.getyx()
-
-        lines, valid_pointer, user_pointer = self.lines_to_display(application)
-
-        lines_fitting = min((self.maxy - self.usedy, self.lines_on_screen))
-        start = 0
-        end = len(lines)
-
-        if lines_fitting == 0:
-            raise Exception("Too small display!")
-
-        if lines_fitting <= len(lines):
-            previous_lines = 1 if lines_fitting > 2 else 0
-            next_lines = 1 if lines_fitting > 1 else 0
-            start = user_pointer[0] - previous_lines
-            end = user_pointer[0] + next_lines
-            if start == -1:
-                end += 1
-
-        for i, line in enumerate(lines):
-            if i >= start and i <= end:
-                screen.addstr(self.padding)
-                self.paint_line(i, line, valid_pointer, user_pointer, screen)
-                screen.addstr("\n")
-
-        self.clear()
+        self.paint_stats()
+        self.paint_line(self.current_line)
+        self.move(self.cursor_x, self.cursor_y)
+        self.refresh()

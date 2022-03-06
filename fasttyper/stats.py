@@ -19,28 +19,13 @@ class Stats:
         if self.start_dtime is None:
             self.start_dtime = datetime.now()
 
-    def update(self, action, valid, running):
-        if running:
-            self.signal_running()
+    def signal_valid(self):
+        self.signal_running()
+        self.correct_chars += 1
 
-        if action == Action.add_char and valid is True:
-            self.correct_chars += 1
-        elif action == Action.add_char and valid is False:
-            self.incorrect_chars += 1
-        elif action in (Action.add_space, Action.add_newline) and valid is True:
-            self.correct_chars += 1
-            self.correct_words += 1
-        elif action in (Action.add_space, Action.add_newline) and valid is False:
-            self.incorrect_chars += 1
-            self.incorrect_words += 1
-
-        if not running:
-            self.signal_stop()
-
-            if valid:
-                self.correct_words += 1
-            else:
-                self.incorrect_words += 1
+    def signal_invalid(self):
+        self.signal_running()
+        self.incorrect_chars += 1
 
     def signal_stop(self):
         self.stop_dtime = datetime.now()

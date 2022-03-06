@@ -1,14 +1,12 @@
 from .application import Application
 from .interface import Interface
 from .components import (
-    CursorComponent,
-    StatsComponent,
     TextBox,
-    TopMargin,
 )
 from .listener import Listener
-from .buffer import UserBuffer, Buffer
+from .buffer import Buffer
 from .config import Config
+from .stats import Stats
 from curses import wrapper
 import os
 import argparse
@@ -24,24 +22,18 @@ def initialize(config_path, rbuffer, backspace_debug, no_cursor):
 
     config = Config(configmap)
 
-    reference_buffer = Buffer(rbuffer)
-    user_buffer = UserBuffer()
+    text_box = TextBox(config)
+    stats = Stats()
 
-    top_margin = TopMargin(config)
-    cursor_component = CursorComponent(config)
-    text_box = TextBox(config, cursor_component)
-    stats_component = StatsComponent(config)
+    buffer = Buffer(rbuffer, text_box, stats)
 
     listener = Listener(backspace_debug)
-    application = Application(listener, user_buffer, reference_buffer, config)
+    application = Application(listener, buffer, config)
 
     interface = Interface(
         application,
         [
-            top_margin,
             text_box,
-            stats_component,
-            cursor_component,
         ],
         no_cursor,
     )
@@ -58,7 +50,7 @@ def get_parser():
         "-c",
         metavar="FILE",
         help="configuration file",
-        default="~/.config/fasttyper/config.json",
+        default="~/.config/fasttyper/config_debug.json",
     )
     parser.add_argument(
         "--unclutter-backspace",

@@ -3,8 +3,9 @@ class Config:
         "user_input_valid_color": 3,
         "user_input_invalid_color": 2,
         "reference_text_color": 8,
-        "stats_template": "\n\nwpm: {stats.wpm:0.2f}\ntime: {stats.total_seconds:0.2f}s",
+        "stats_template": "wpm: {stats.wpm:0.2f}, time: {stats.total_seconds:0.2f}s",
         "stats_color": 5,
+        "stats_position": "top",
         "summary_template": (
             "WPM: {stats.wpm:0.2f}\n"
             "CPM: {stats.cpm:0.2f}\n"
