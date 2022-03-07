@@ -247,6 +247,10 @@ class BufferDependentComponent(BorderedBox):
 
             self.current_word_idx += 1
 
+            self.lines[self.current_line][self.word_index] = self.buffer.get_word(
+                self.current_word_idx
+            )
+
         while word_index < self.current_word_idx:
             self.word_index -= 1
 
@@ -255,6 +259,10 @@ class BufferDependentComponent(BorderedBox):
                 self.word_index = len(self.lines[self.current_line]) - 1
 
             self.current_word_idx -= 1
+
+            self.lines[self.current_line][self.word_index] = self.buffer.get_word(
+                self.current_word_idx
+            )
 
         while (
             self.current_line > self.prefered_line or self.current_line == self.height

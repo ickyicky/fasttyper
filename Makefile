@@ -3,3 +3,6 @@ build: fasttyper
 
 push:
 	twine upload dist/*
+
+clean:
+	rm dist/*

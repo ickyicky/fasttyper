@@ -75,10 +75,18 @@ class Buffer:
 
     def _del_word(self):
         try:
+            if self.user_words[self.current_word] == "":
+                self.current_word = max(0, self.current_word - 1)
+
             self.user_words[self.current_word] = ""
             self.current_char = 0
         except IndexError:
             self.current_word = max(0, self.current_word - 1)
+            try:
+                self.user_words[self.current_word] = ""
+            except IndexError:
+                pass
+            self.current_char = 0
 
     def handle_action(self, action, char):
         if action == Action.add_char:
