@@ -147,7 +147,6 @@ class BufferDependentComponent(BorderedBox):
 
         for i in range(start_idx, self.buffer.total_words):
             word = self.buffer.get_word(i)
-            self.should_repaint[line_nr] = True
 
             if len(word) > self.width:
                 word = word[: self.width - 1]
@@ -159,6 +158,7 @@ class BufferDependentComponent(BorderedBox):
                     break
 
             self.lines[line_nr].append(word)
+            self.should_repaint[line_nr] = True
 
         self.buffered_lines = self.height
 
