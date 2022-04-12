@@ -16,6 +16,7 @@ class Interface:
             curses.init_pair(i + 1, i, -1)
 
     def init(self, screen):
+        screen.clear()
         self.init_colors()
 
     def update(self, screen):
