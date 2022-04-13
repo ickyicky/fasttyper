@@ -9,7 +9,7 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
 
 setup(
     name="fasttyper",
-    version="2.0.5",
+    version="2.0.6",
     author="Piotr Domanski",
     author_email="pi.domanski@gmail.com",
     description="Minimalistic typing exercise",

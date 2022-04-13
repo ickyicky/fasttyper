@@ -6,9 +6,15 @@ class Interface:
         self.application = application
         self.components = components
         self.no_cursor = no_cursor
+        self.colors = True
 
     def init_colors(self):
-        assert curses.has_colors()
+        try:
+            assert curses.has_colors()
+        except AssertionError:
+            self.colors = False
+            return
+
         curses.start_color()
         curses.use_default_colors()
 
