@@ -333,12 +333,15 @@ class StatsBox(BorderWithImprintedStats):
 
     def __init__(self, config):
         super().__init__(config)
-        self.wpm_color = config.get("wpm_grapth_color")
-        self.raw_wpm_color = config.get("raw_wpm_grapth_color")
-        self.errors = config.get("errors_graph_color")
+        self.wpm_color = config.get("wpm_graph_color")
+        self.raw_wpm_color = config.get("raw_wpm_graph_color")
+        self.errors_color = config.get("errors_graph_color")
 
     def paint(self, screen, application):
         self.maxy, self.maxx = screen.getmaxyx()
         self.init(screen, application)
         self.paint_stats()
+        self.paint_text(
+            self.height // 2, self.width // 2 - 5, "FASTTYPER", self.errors_color
+        )
         self.refresh()
