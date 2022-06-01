@@ -1,4 +1,4 @@
-from .cli import initialize, get_parser
+from .cli import initialize, get_parser, RuntimeConfig
 from random import choice
 import os
 import requests
@@ -48,7 +48,15 @@ def runner():
 
     while True:
         rbuffer = " ".join([choice(words) for _ in range(args.amount)])
-        initialize(args.config, rbuffer, args.unclutter_backspace, args.no_cursor)
+        initialize(
+            args.config,
+            rbuffer,
+            args.unclutter_backspace,
+            args.no_cursor,
+            RuntimeConfig(
+                mode=RuntimeConfig.WORDS, words=args.amount, language=args.language
+            ),
+        )
 
 
 if __name__ == "__main__":

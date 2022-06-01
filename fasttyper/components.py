@@ -68,6 +68,7 @@ class BorderedBox(WindowComponent):
         self.pos_x = config.get("left_margin_percentage") / 100
         self.height = config.get("lines_on_screen")
         self.width = None
+        self.application = None
 
     def paint_text(self, row, col, text, color):
         super().paint_text(row + 1, col + 1, text, color)
@@ -76,6 +77,7 @@ class BorderedBox(WindowComponent):
         super().move(x + 1, y + 1)
 
     def init(self, screen, application):
+        self.application = application
         self.width = int(self.maxx * (1 - 2 * self.pos_x))
         self.update_size(
             self.height + 2,
@@ -89,7 +91,30 @@ class BorderedBox(WindowComponent):
         screen.refresh()
 
 
-class BufferDependentComponent(BorderedBox):
+class BorderWithImprintedStats(BorderedBox):
+    """
+    Imprints stats on one of borders
+    """
+
+    def __init__(self, config):
+        super().__init__(config)
+
+        self.stats_template = config.get("stats_template").replace("\n", " ")
+        self.stats_color = config.get("stats_color")
+        self.stats_row = -1 if config.get("stats_position") == "top" else self.height
+
+    def paint_stats(self):
+        text = self.stats_template.format(stats=self.application.buffer.stats)
+        if len(text) < self.width - 2:
+            self.paint_text(
+                self.stats_row,
+                2,
+                text + " " * (self.width - 2 - len(text)),
+                self.stats_color,
+            )
+
+
+class BufferDependentComponent(BorderWithImprintedStats):
     """
     Adds content source from buffer
     """
@@ -276,30 +301,7 @@ class BufferDependentComponent(BorderedBox):
         self.update_cursor()
 
 
-class BorderWithImprintedStats(BufferDependentComponent):
-    """
-    Imprints stats on one of borders
-    """
-
-    def __init__(self, config):
-        super().__init__(config)
-
-        self.stats_template = config.get("stats_template").replace("\n", " ")
-        self.stats_color = config.get("stats_color")
-        self.stats_row = -1 if config.get("stats_position") == "top" else self.height
-
-    def paint_stats(self):
-        text = self.stats_template.format(stats=self.buffer.stats)
-        if len(text) < self.width - 2:
-            self.paint_text(
-                self.stats_row,
-                2,
-                text + " " * (self.width - 2 - len(text)),
-                self.stats_color,
-            )
-
-
-class TextBox(BorderWithImprintedStats):
+class TextBox(BufferDependentComponent):
     """
     Calls all inherited paint functions and inits windows
     """
@@ -321,4 +323,22 @@ class TextBox(BorderWithImprintedStats):
             self.paint_line(line)
 
         self.move(self.cursor_x, self.cursor_y)
+        self.refresh()
+
+
+class StatsBox(BorderWithImprintedStats):
+    """
+    Displays stats
+    """
+
+    def __init__(self, config):
+        super().__init__(config)
+        self.wpm_color = config.get("wpm_grapth_color")
+        self.raw_wpm_color = config.get("raw_wpm_grapth_color")
+        self.errors = config.get("errors_graph_color")
+
+    def paint(self, screen, application):
+        self.maxy, self.maxx = screen.getmaxyx()
+        self.init(screen, application)
+        self.paint_stats()
         self.refresh()

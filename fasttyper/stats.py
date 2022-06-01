@@ -6,7 +6,9 @@ import pathlib
 
 
 class Stats:
-    def __init__(self):
+    def __init__(self, runtime_config):
+        self.runtime_config = runtime_config
+
         self.correct_chars = 0
         self.incorrect_chars = 0
 
@@ -15,6 +17,8 @@ class Stats:
 
         self.buffer = None
         self.finished = False
+
+        self.snaps = []
 
     def set_buffer(self, buffer):
         self.buffer = buffer
@@ -29,14 +33,20 @@ class Stats:
     def signal_valid(self):
         self.signal_running()
         self.correct_chars += 1
+        self.take_snap()
 
     def signal_invalid(self):
         self.signal_running()
         self.incorrect_chars += 1
+        self.take_snap()
 
     def signal_stop(self, finished=False):
         self.stop_dtime = datetime.now()
         self.finished = finished
+        self.take_snap()
+
+    def take_snap(self):
+        self.snaps.append(self.produce_record())
 
     @property
     def correct_words(self):
@@ -86,13 +96,10 @@ class Stats:
             return self.correct_chars / self.total_chars * 100
         return 100
 
-    def summarize(self, template):
-        print(template.format(stats=self))
-
     def produce_record(self):
         return {
-            "start_dtime": self.start_dtime.isoformat(),
-            "stop_dtime": self.stop_dtime.isoformat(),
+            "start_dtime": self.start_dtime.isoformat() if self.start_dtime else None,
+            "stop_dtime": self.stop_dtime.isoformat() if self.stop_dtime else None,
             "total_seconds": self.total_seconds,
             "total_minutes": self.total_minutes,
             "total_chars": self.total_chars,
@@ -106,6 +113,9 @@ class Stats:
             "raw_wpm": self.raw_wpm,
             "raw_cpm": self.raw_cpm,
             "accuracy": self.accuracy,
+            "mode": self.runtime_config.mode,
+            "language": self.runtime_config.language,
+            "words": self.runtime_config.words,
         }
 
     def export_to_datafile(self, datafile):
@@ -129,5 +139,3 @@ class Stats:
             with open(datafile, "a") as f:
                 writter = csv.DictWriter(f, fieldnames=record.keys())
                 writter.writerow(record)
-
-        print(f"\nwrote stats to {datafile}")

@@ -2,6 +2,7 @@ from .application import Application
 from .interface import Interface
 from .components import (
     TextBox,
+    StatsBox,
 )
 from .listener import Listener
 from .buffer import Buffer
@@ -13,7 +14,17 @@ import argparse
 import json
 
 
-def initialize(config_path, rbuffer, backspace_debug, no_cursor):
+class RuntimeConfig:
+    WORDS = "words"
+    TEXT = "text"
+
+    def __init__(self, words=None, language=None, mode=None):
+        self.words = words
+        self.language = language
+        self.mode = mode
+
+
+def initialize(config_path, rbuffer, backspace_debug, no_cursor, runtime_config):
     try:
         with open(os.path.expanduser(config_path)) as f:
             configmap = json.load(f)
@@ -23,7 +34,8 @@ def initialize(config_path, rbuffer, backspace_debug, no_cursor):
     config = Config(configmap)
 
     text_box = TextBox(config)
-    stats = Stats()
+    stats_box = StatsBox(config)
+    stats = Stats(runtime_config)
 
     buffer = Buffer(rbuffer, text_box, stats)
 
@@ -35,11 +47,13 @@ def initialize(config_path, rbuffer, backspace_debug, no_cursor):
         [
             text_box,
         ],
+        [
+            stats_box,
+        ],
         no_cursor,
     )
     wrapper(interface)
 
-    application.summarize()
     application.exit()
 
 

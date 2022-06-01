@@ -22,22 +22,19 @@ class Application:
     def action(self, screen):
         try:
             action, key = self.listener.listen(screen)
-            self.buffer.handle_action(action, key)
+            if self.running():
+                self.buffer.handle_action(action, key)
         except StoppingSignal as e:
             if e.silent:
                 self.silent_exit = True
-            self.buffer.stats.signal_stop()
+            if self.running():
+                self.buffer.stats.signal_stop()
 
     def summarize(self):
         if self.finished:
-            self.buffer.stats.summarize(self.config.get("summary_template"))
             self.buffer.stats.export_to_datafile(self.config.get("summary_datafile"))
-            try:
-                c = readchar.readchar()
-                if ord(c) == 3:
-                    raise KeyboardInterrupt
-            except KeyboardInterrupt:
-                sys.exit(1)
+            return True
+        return False
 
     def exit(self):
         if not self.finished and not self.silent_exit:

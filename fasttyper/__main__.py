@@ -1,4 +1,4 @@
-from .cli import initialize, get_parser
+from .cli import initialize, get_parser, RuntimeConfig
 import sys
 import os
 
@@ -23,7 +23,13 @@ def main():
 
         rbuffer = "".join(input_lines)
 
-    initialize(args.config, rbuffer, args.unclutter_backspace, args.no_cursor)
+    initialize(
+        args.config,
+        rbuffer,
+        args.unclutter_backspace,
+        args.no_cursor,
+        RuntimeConfig(mode=RuntimeConfig.TEXT),
+    )
 
 
 if __name__ == "__main__":
