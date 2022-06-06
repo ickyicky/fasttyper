@@ -43,6 +43,8 @@ class Interface:
 
         if self.no_cursor:
             curses.curs_set(0)
+        else:
+            curses.curs_set(1)
 
         while self.application.running():
             self.update(screen)
