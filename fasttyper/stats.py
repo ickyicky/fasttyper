@@ -60,7 +60,7 @@ class Stats:
     def total_seconds(self):
         stop_dtime = self.stop_dtime or datetime.now()
         start_dtime = self.start_dtime or datetime.now()
-        return (stop_dtime - start_dtime).total_seconds() or 1
+        return max(((stop_dtime - start_dtime).total_seconds(), 1))
 
     @property
     def total_minutes(self):
@@ -91,15 +91,29 @@ class Stats:
         return self.total_chars / self.total_minutes
 
     @property
+    def peak_raw_cpm(self):
+        return max([s["raw_cpm"] for s in self.snaps] + [0.0])
+
+    @property
+    def peak_cpm(self):
+        return max([s["raw_cpm"] for s in self.snaps] + [0.0])
+
+    @property
+    def peak_raw_wpm(self):
+        return self.peak_raw_cpm / 5
+
+    @property
+    def peak_wpm(self):
+        return self.peak_cpm / 5
+
+    @property
     def accuracy(self):
         if self.total_chars:
             return self.correct_chars / self.total_chars * 100
         return 100
 
-    def produce_record(self):
-        return {
-            "start_dtime": self.start_dtime.isoformat() if self.start_dtime else None,
-            "stop_dtime": self.stop_dtime.isoformat() if self.stop_dtime else None,
+    def produce_record(self, for_csv=False):
+        result = {
             "total_seconds": self.total_seconds,
             "total_minutes": self.total_minutes,
             "total_chars": self.total_chars,
@@ -113,10 +127,26 @@ class Stats:
             "raw_wpm": self.raw_wpm,
             "raw_cpm": self.raw_cpm,
             "accuracy": self.accuracy,
-            "mode": self.runtime_config.mode,
-            "language": self.runtime_config.language,
-            "words": self.runtime_config.words,
         }
+        if for_csv:
+            result.update(
+                {
+                    "peak_cpm": self.peak_cpm,
+                    "peak_raw_cpm": self.peak_raw_cpm,
+                    "peak_wpm": self.peak_wpm,
+                    "peak_raw_wpm": self.peak_raw_wpm,
+                    "start_dtime": self.start_dtime.isoformat()
+                    if self.start_dtime
+                    else None,
+                    "stop_dtime": self.stop_dtime.isoformat()
+                    if self.stop_dtime
+                    else None,
+                    "mode": self.runtime_config.mode,
+                    "language": self.runtime_config.language,
+                    "words": self.runtime_config.words,
+                }
+            )
+        return result
 
     def export_to_datafile(self, datafile):
         if datafile is None:
@@ -128,7 +158,7 @@ class Stats:
         pathlib.Path(data_dir).mkdir(exist_ok=True, parents=True)
         exists = os.path.isfile(datafile)
 
-        record = self.produce_record()
+        record = self.produce_record(for_csv=True)
 
         if not exists:
             with open(datafile, "w") as f:

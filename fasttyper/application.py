@@ -29,6 +29,9 @@ class Application:
                 self.silent_exit = True
             if self.running():
                 self.buffer.stats.signal_stop()
+        except:
+            if self.running():
+                self.buffer.stats.signal_stop()
 
     def summarize(self):
         if self.finished:

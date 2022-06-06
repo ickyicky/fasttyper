@@ -10,9 +10,16 @@ class Config:
         "top_margin_percentage": 40,
         "left_margin_percentage": 35,
         "lines_on_screen": 3,
-        "wpm_graph_color": 3,
-        "raw_wpm_graph_color": 9,
-        "errors_graph_color": 2,
+        "logo": "~FastTyper~",
+        "logo_color": 8,
+        "resume_text": "press any key to continue, <Ctrl>C to exit",
+        "resume_text_color": 9,
+        "end_template": (
+            "wpm: {wpm:.1f}/{peak_wpm:.1f}  raw: {raw_wpm:.1f}/{peak_raw_wpm:.1f}",
+            "acc: {accuracy:.1f}  chars: {correct_chars}/{total_chars}  words: {correct_words}/{total_words}",
+            "time: {total_seconds:.1f}s",
+        ),
+        "end_color": 9,
     }
 
     def __init__(self, configmap):

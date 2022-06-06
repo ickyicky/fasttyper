@@ -326,22 +326,50 @@ class TextBox(BufferDependentComponent):
         self.refresh()
 
 
-class StatsBox(BorderWithImprintedStats):
+class StatsBox(BorderedBox):
     """
     Displays stats
     """
 
     def __init__(self, config):
         super().__init__(config)
-        self.wpm_color = config.get("wpm_graph_color")
-        self.raw_wpm_color = config.get("raw_wpm_graph_color")
-        self.errors_color = config.get("errors_graph_color")
+        self.logo = config.get("logo")
+        self.logo_color = config.get("logo_color")
+        self.resume_text = config.get("resume_text")
+        self.resume_text_color = config.get("resume_text_color")
+        self.template = config.get("end_template")
+        self.color = config.get("end_color")
+
+    def paint_logo(self):
+        if len(self.logo) <= self.width:
+            self.paint_text(
+                -1, (self.width - len(self.logo)) // 2, self.logo, self.logo_color
+            )
+
+    def paint_resume_text(self):
+        if len(self.resume_text) <= self.width:
+            self.paint_text(
+                self.height,
+                (self.width - len(self.resume_text)) // 2,
+                self.resume_text,
+                self.resume_text_color,
+            )
+
+    def paint_stats(self, application):
+        record = application.buffer.stats.produce_record(for_csv=True)
+        lines = [l.format_map(record) for l in self.template]
+        max_l = max((len(l) for l in lines))
+
+        if max_l > self.width:
+            return
+
+        for i, text in enumerate(lines):
+            self.paint_text(i, 1, text, self.color)
 
     def paint(self, screen, application):
         self.maxy, self.maxx = screen.getmaxyx()
         self.init(screen, application)
-        self.paint_stats()
-        self.paint_text(
-            self.height // 2, self.width // 2 - 5, "FASTTYPER", self.errors_color
-        )
+        self.paint_logo()
+        self.paint_resume_text()
+        self.paint_stats(application)
         self.refresh()
