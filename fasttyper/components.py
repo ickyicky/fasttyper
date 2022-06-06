@@ -59,14 +59,14 @@ class BorderedBox(WindowComponent):
     Adds border to WindowComponent
     """
 
-    def __init__(self, config):
+    def __init__(self, config, height, border):
         super().__init__(config)
-
         self.maxy, self.maxx = None, None
 
         self.pos_y = config.get("top_margin_percentage") / 100
         self.pos_x = config.get("left_margin_percentage") / 100
-        self.height = config.get("lines_on_screen")
+        self.height = height
+        self.border = border
         self.width = None
         self.application = None
 
@@ -86,7 +86,7 @@ class BorderedBox(WindowComponent):
             int(self.pos_y * self.maxy) - 1,
         )
         self.init_window()
-        self.set_box(1)
+        self.set_box(self.border)
 
         screen.refresh()
 
@@ -97,7 +97,7 @@ class BorderWithImprintedStats(BorderedBox):
     """
 
     def __init__(self, config):
-        super().__init__(config)
+        super().__init__(config, config.get("lines_on_screen"), config.get("border"))
 
         self.stats_template = config.get("stats_template").replace("\n", " ")
         self.stats_color = config.get("stats_color")
@@ -326,19 +326,22 @@ class TextBox(BufferDependentComponent):
         self.refresh()
 
 
-class StatsBox(BorderedBox):
+class Summary(BorderedBox):
     """
-    Displays stats
+    Displays summary
     """
 
     def __init__(self, config):
-        super().__init__(config)
+        super().__init__(
+            config, config.get("summary_lines"), config.get("summary_border")
+        )
         self.logo = config.get("logo")
         self.logo_color = config.get("logo_color")
         self.resume_text = config.get("resume_text")
         self.resume_text_color = config.get("resume_text_color")
-        self.template = config.get("end_template")
-        self.color = config.get("end_color")
+        self.template = config.get("summary_template")
+        self.color = config.get("summary_color")
+        self.centered = config.get("summary_centered")
 
     def paint_logo(self):
         if len(self.logo) <= self.width:
@@ -364,7 +367,10 @@ class StatsBox(BorderedBox):
             return
 
         for i, text in enumerate(lines):
-            self.paint_text(i, 1, text, self.color)
+            offset = 0
+            if self.centered:
+                offset = self.width // 2 - len(text.split("|")[0]) - 1
+            self.paint_text(i, offset, text, self.color)
 
     def paint(self, screen, application):
         self.maxy, self.maxx = screen.getmaxyx()

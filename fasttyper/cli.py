@@ -2,7 +2,7 @@ from .application import Application
 from .interface import Interface
 from .components import (
     TextBox,
-    StatsBox,
+    Summary,
 )
 from .listener import Listener
 from .buffer import Buffer
@@ -34,7 +34,7 @@ def initialize(config_path, rbuffer, backspace_debug, no_cursor, runtime_config)
     config = Config(configmap)
 
     text_box = TextBox(config)
-    stats_box = StatsBox(config)
+    summary = Summary(config)
     stats = Stats(runtime_config)
 
     buffer = Buffer(rbuffer, text_box, stats)
@@ -48,7 +48,7 @@ def initialize(config_path, rbuffer, backspace_debug, no_cursor, runtime_config)
             text_box,
         ],
         [
-            stats_box,
+            summary,
         ],
         no_cursor,
     )

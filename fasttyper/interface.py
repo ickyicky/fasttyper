@@ -3,10 +3,10 @@ from .application import StoppingSignal
 
 
 class Interface:
-    def __init__(self, application, components, end_components, no_cursor=False):
+    def __init__(self, application, components, summary_components, no_cursor=False):
         self.application = application
         self.components = components
-        self.end_components = end_components
+        self.summary_components = summary_components
         self.no_cursor = no_cursor
         self.colors = True
 
@@ -31,8 +31,8 @@ class Interface:
         for component in self.components:
             component.paint(screen, self.application)
 
-    def draw_end(self, screen):
-        for component in self.end_components:
+    def draw_summary(self, screen):
+        for component in self.summary_components:
             component.paint(screen, self.application)
 
     def __call__(self, screen):
@@ -54,7 +54,7 @@ class Interface:
         if self.application.summarize():
             screen.clear()
             curses.curs_set(0)
-            self.draw_end(screen)
+            self.draw_summary(screen)
 
             while self.application.action(screen):
                 pass

@@ -10,16 +10,21 @@ class Config:
         "top_margin_percentage": 40,
         "left_margin_percentage": 35,
         "lines_on_screen": 3,
-        "logo": "~FastTyper~",
+        "border": 1,
+        "logo": " ~ FastTyper ~ ",
         "logo_color": 8,
-        "resume_text": "press <Tab> to continue, <Ctrl>C to exit",
+        "resume_text": " press <Tab> to continue, <Ctrl>C to exit ",
         "resume_text_color": 9,
-        "end_template": (
-            "wpm: {wpm:.1f}/{peak_wpm:.1f}  raw: {raw_wpm:.1f}/{peak_raw_wpm:.1f}",
-            "acc: {accuracy:.1f}  chars: {correct_chars}/{total_chars}  words: {correct_words}/{total_words}",
-            "time: {total_seconds:.1f}s",
+        "summary_template": (
+            "wpm: {wpm:5.1f}   |   peak: {peak_wpm:5.1f}",
+            "raw: {raw_wpm:5.1f}   |   peak: {peak_raw_wpm:5.1f}",
+            "acc: {accuracy:5.1f}%  |   words: {correct_words}/{total_words}",
+            "time: {total_seconds:5.1f}s ",
         ),
-        "end_color": 9,
+        "summary_centered": True,
+        "summary_color": 9,
+        "summary_lines": 4,
+        "summary_border": 0,
     }
 
     def __init__(self, configmap):
