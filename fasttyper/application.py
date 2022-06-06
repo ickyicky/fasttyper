@@ -24,14 +24,13 @@ class Application:
             action, key = self.listener.listen(screen)
             if self.running():
                 self.buffer.handle_action(action, key)
+            return True
         except StoppingSignal as e:
             if e.silent:
                 self.silent_exit = True
             if self.running():
                 self.buffer.stats.signal_stop()
-        except:
-            if self.running():
-                self.buffer.stats.signal_stop()
+            return False
 
     def summarize(self):
         if self.finished:
@@ -40,7 +39,7 @@ class Application:
         return False
 
     def exit(self):
-        if not self.finished and not self.silent_exit:
+        if not self.silent_exit:
             sys.exit(1)
 
 

@@ -1,5 +1,6 @@
 import enum
 import string
+import curses
 from .application import StoppingSignal
 
 
@@ -64,5 +65,5 @@ class Listener:
         try:
             key = screen.get_wch()
             return self.handle_key(key)
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, curses.error):
             raise StoppingSignal()

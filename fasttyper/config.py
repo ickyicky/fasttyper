@@ -12,7 +12,7 @@ class Config:
         "lines_on_screen": 3,
         "logo": "~FastTyper~",
         "logo_color": 8,
-        "resume_text": "press any key to continue, <Ctrl>C to exit",
+        "resume_text": "press <Tab> to continue, <Ctrl>C to exit",
         "resume_text_color": 9,
         "end_template": (
             "wpm: {wpm:.1f}/{peak_wpm:.1f}  raw: {raw_wpm:.1f}/{peak_raw_wpm:.1f}",

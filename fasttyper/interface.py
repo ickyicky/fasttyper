@@ -1,4 +1,5 @@
 import curses
+from .application import StoppingSignal
 
 
 class Interface:
@@ -54,4 +55,6 @@ class Interface:
             screen.clear()
             curses.curs_set(0)
             self.draw_end(screen)
-            self.application.action(screen)
+
+            while self.application.action(screen):
+                pass
