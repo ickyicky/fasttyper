@@ -12,8 +12,12 @@ class WindowComponent:
         self._width = None
         self._begin_x = None
         self._begin_y = None
+        self.interface = None
 
         self.cursor_x, self.cursor_y = 0, 0
+
+    def set_interface(self, interface):
+        self.interface = interface
 
     def update_size(self, height, width, begin_x, begin_y):
         self._height = height
@@ -33,6 +37,7 @@ class WindowComponent:
         self._window.box(i, i)
 
     def paint_text(self, row, col, text, color):
+        color = self.interface.normalize_color(color)
         self._window.addstr(row, col, text, curses.color_pair(color))
 
     def move(self, x, y):

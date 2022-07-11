@@ -9,6 +9,13 @@ class Interface:
         self.summary_components = summary_components
         self.no_cursor = no_cursor
         self.colors = True
+        self.max_color = None
+
+        for component in self.components:
+            component.set_interface(self)
+
+        for component in self.summary_components:
+            component.set_interface(self)
 
     def init_colors(self):
         try:
@@ -21,7 +28,11 @@ class Interface:
         curses.use_default_colors()
 
         for i in range(0, curses.COLORS):
-            curses.init_pair(i + 1, i, -1)
+            self.max_color = i + 1
+            try:
+                curses.init_pair(i + 1, i, -1)
+            except Exception:
+                break
 
     def init(self, screen):
         screen.clear()
@@ -34,6 +45,12 @@ class Interface:
     def draw_summary(self, screen):
         for component in self.summary_components:
             component.paint(screen, self.application)
+
+    def normalize_color(self, color):
+        if not self.colors:
+            0
+
+        return color % self.max_color
 
     def __call__(self, screen):
         """
