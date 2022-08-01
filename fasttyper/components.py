@@ -70,6 +70,7 @@ class BorderedBox(WindowComponent):
 
         self.pos_y = config.get("top_margin_percentage") / 100
         self.pos_x = config.get("left_margin_percentage") / 100
+        self.min_width = config.get("min_width")
         self.height = height
         self.border = border
         self.width = None
@@ -84,11 +85,20 @@ class BorderedBox(WindowComponent):
     def init(self, screen, application):
         self.application = application
         self.width = int(self.maxx * (1 - 2 * self.pos_x))
+
+        pos_x = int(self.pos_x * self.maxx) - 1
+        pos_y = int(self.pos_y * self.maxy) - 1
+
+        if self.width < self.min_width:
+            width = min(self.maxx, self.min_width)
+            self.width = width
+            pos_x = int(max(0, (self.maxx - width) / 2 - 1))
+
         self.update_size(
             self.height + 2,
             self.width + 2,
-            int(self.pos_x * self.maxx) - 1,
-            int(self.pos_y * self.maxy) - 1,
+            pos_x,
+            pos_y,
         )
         self.init_window()
         self.set_box(self.border)

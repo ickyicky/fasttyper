@@ -9,6 +9,7 @@ class Config:
         "summary_datafile": "~/.cache/fasttyper/datafile.csv",
         "top_margin_percentage": 40,
         "left_margin_percentage": 35,
+        "min_width": 80,
         "lines_on_screen": 3,
         "border": 1,
         "logo": " ~ FastTyper ~ ",

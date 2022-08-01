@@ -1,3 +1,4 @@
+import os
 import enum
 import string
 import curses
@@ -6,6 +7,10 @@ from .application import StoppingSignal
 
 WHITE = [ord(c) for c in string.whitespace]
 TAB = ord("\t")
+
+TERMINALS_WITH_NORMAL_SPACE = [
+    "xterm-kitty",
+]
 
 
 class Action(enum.Enum):
@@ -19,7 +24,10 @@ class Action(enum.Enum):
 
 class Listener:
     def __init__(self, backspace_debug=False):
-        self.backspace_debug = not backspace_debug
+        self.backspace_debug = backspace_debug
+
+        if os.environ.get("TERM", "") in TERMINALS_WITH_NORMAL_SPACE:
+            self.backspace_debug = not self.backspace_debug
 
     def action_for_char(self, key):
         if key == "\t":
