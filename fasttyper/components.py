@@ -90,7 +90,7 @@ class BorderedBox(WindowComponent):
         pos_y = int(self.pos_y * self.maxy) - 1
 
         if self.width < self.min_width:
-            width = min(self.maxx, self.min_width)
+            width = min(self.maxx - 2, self.min_width)
             self.width = width
             pos_x = int(max(0, (self.maxx - width) / 2 - 1))
 
