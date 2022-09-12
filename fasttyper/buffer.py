@@ -53,8 +53,13 @@ class Buffer:
 
     def _next_word(self):
         self.current_word += 1
+
+        if self.current_char > 0:
+            self.stats.signal_valid()  # space is a char after all
+        else:
+            self.stats.signal_invalid()  # space after empty word
+
         self.current_char = 0
-        self.stats.signal_valid()  # space is a char after all
 
         if self.current_word >= self.total_words:
             self.stats.signal_stop(True)
@@ -143,4 +148,4 @@ class Buffer:
             if w != self.reference_words[i]:
                 count += 1
 
-        return count
+        return count + len(self.reference_words) - len(self.user_words)
