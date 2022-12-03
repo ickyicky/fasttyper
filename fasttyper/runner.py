@@ -55,8 +55,8 @@ def generate_text(
             word = word.capitalize()
 
         if punctuation_factor and punctuation_factor / 100 > random():
-            punctuation = choice(punctuation)
-            word = "".join((word, punctuation))
+            chosen_punctuation = choice(punctuation)
+            word = "".join((word, chosen_punctuation))
 
         new_sentence = word[-1] in sentence_ending
         chosen_words.append(word)
