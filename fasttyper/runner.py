@@ -6,8 +6,6 @@ import pathlib
 
 
 MONKEYTYPE_WORDS_PATT = "https://raw.githubusercontent.com/Miodec/monkeytype/master/frontend/static/languages/{language}.json"
-PUNCTUATION = ",.?!;:"
-PUNCTUATION_ENDING_SENTENCE = ".?!"
 
 
 def get_words(language):

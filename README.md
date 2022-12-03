@@ -53,6 +53,48 @@ To kill application (exit) press CTRL+C.
 
 # Configuring
 
+Default configuration:
+
+```python
+{
+    "user_input_valid_color": 3,
+    "user_input_invalid_color": 2,
+    "reference_text_color": 9,
+    "stats_template": "wpm: {stats.wpm:0.2f}, time: {stats.total_seconds:0.2f}s",
+    "stats_color": 5,
+    "stats_position": "top",
+    "summary_datafile": "~/.cache/fasttyper/datafile.csv",
+    "top_margin_percentage": 40,
+    "left_margin_percentage": 35,
+    "min_width": 80,
+    "lines_on_screen": 3,
+    "border": 1,
+    "logo": " ~ FastTyper ~ ",
+    "logo_color": 8,
+    "resume_text": " press <Tab> to continue, <Ctrl>C to exit ",
+    "resume_text_color": 9,
+    "summary_template": (
+        "wpm: {wpm:5.1f}   |   peak: {peak_wpm:5.1f}",
+        "raw: {raw_wpm:5.1f}   |   peak: {peak_raw_wpm:5.1f}",
+        "acc: {accuracy:5.1f}%  |   words: {correct_words}/{total_words}",
+        "time: {total_seconds:5.1f}s ",
+    ),
+    "summary_centered": True,
+    "summary_color": 9,
+    "summary_lines": 4,
+    "summary_border": 0,
+    "random_capitalization": 0,
+    "random_punctuation": 0,
+    "sentence_mode": False,
+    "punctuation": ",.?!;:",
+    "sentence_ending": ".?!",
+    "amount": 25,
+    "language": "english",
+    "no_cursor": False,
+    "unclutter_backspace": False,
+}
+```
+
 Fasttyper by default looks for config file in: `$HOME/.config/fasttyper/config.json`. You can provide different location for config file with `--config` argument, for example: `--config=~/.fasttyper.json`. Config has to be a json dict. Avalibe keys:
 
 - **user_input_valid_color** - integer, terminal color for valid text, by default it is 3
@@ -63,6 +105,8 @@ Fasttyper by default looks for config file in: `$HOME/.config/fasttyper/config.j
 - **top_margin_percentage** - integer, percentage of screen used for top margin, by default 30
 - **left_margin_percentage** - integer, percentage of screen used for left (and right) margin, by default 10
 - **lines_on_screen** - integer, number of lines to display on screen, by default 3
+
+Also there are keys that override fault parameters for CLI args, like: amount and language will override Your default settings for runner, same goes for punctuation, sentence_mode etc.
 
 Example config file with all default values in avalibe [here](https://github.com/ickyicky/fasttyper/blob/main/doc/example_config.json).
 
