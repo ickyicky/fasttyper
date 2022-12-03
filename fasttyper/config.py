@@ -26,6 +26,15 @@ class Config:
         "summary_color": 9,
         "summary_lines": 4,
         "summary_border": 0,
+        "random_capitalization": 0,
+        "random_punctuation": 0,
+        "sentence_mode": False,
+        "punctuation": ",.?!;:",
+        "sentence_ending": ".?!",
+        "amount": 25,
+        "language": "english",
+        "no_cursor": False,
+        "unclutter_backspace": False,
     }
 
     def __init__(self, configmap):

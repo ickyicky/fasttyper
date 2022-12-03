@@ -24,7 +24,7 @@ class RuntimeConfig:
         self.mode = mode
 
 
-def initialize(config_path, rbuffer, backspace_debug, no_cursor, runtime_config):
+def get_config(config_path):
     try:
         with open(os.path.expanduser(config_path)) as f:
             configmap = json.load(f)
@@ -32,6 +32,17 @@ def initialize(config_path, rbuffer, backspace_debug, no_cursor, runtime_config)
         configmap = {}
 
     config = Config(configmap)
+    return config
+
+
+def initialize(config, rbuffer, backspace_debug, no_cursor, runtime_config):
+    if isinstance(config, str):
+        config = get_config(config)
+
+    backspace_debug = (
+        backspace_debug(config) if callable(backspace_debug) else backspace_debug
+    )
+    no_cursor = no_cursor(config) if callable(no_cursor) else no_cursor
 
     text_box = TextBox(config)
     summary = Summary(config)
@@ -71,13 +82,21 @@ def get_parser():
         "-b",
         action="store_true",
         help="unclutter backspace, when it raises ctrl+backspace instead",
-        default=False,
+        default=ValueFromConfig("unclutter_backspace"),
     )
     parser.add_argument(
         "--no-cursor",
         "-n",
         action="store_true",
         help="disable cursos",
-        default=False,
+        default=ValueFromConfig("no_cursor"),
     )
     return parser
+
+
+class ValueFromConfig:
+    def __init__(self, key):
+        self.key = key
+
+    def __call__(self, config):
+        return config.get(self.key)
