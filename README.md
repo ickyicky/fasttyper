@@ -5,6 +5,19 @@
 
 _Fasttyper_ is minimalistic typing test based on user provided exercising text. It supports both reading from text files and stdin supporting wide range of usecases. The goal was to create it as simple as it can be, without any additional bloatware functionalities. That means that _Fasttyper_ doesn't come with build in test generator and you have to provide your own scripts generating tests. Some examples of such scrips are providen in [Usage section](#usage).
 
+# Table of contents
+
+  - [fasttyper](#fasttyper)
+  - [About](#about)
+  - [Installation](#installation)
+  - [Usage](#usage)
+  - [Running next test and stopping application](#running-next-test-and-stopping-application)
+  - [Configuring](#configuring)
+  - [Usage as module, piping stuff, custom scripts etc](#usage-as-module,-piping-stuff,-custom-scripts-etc)
+  - [When backspace does wierd shiet](#when-backspace-does-wierd-shiet)
+  - [Hiding cursor](#hiding-cursor)
+    - [Example scripts](#example-scripts)
+
 # Installation
 
 _Fasttyper_ is currently maintained on [PyPi](https://pypi.org/) Python Package Index. To install package simpply use:
