@@ -3,7 +3,7 @@
 
 # About
 
-_Fasttyper_ is minimalistic typing test based on user provided exercising text. It supports both reading from text files and stdin supporting wide range of usecases. The goal was to create it as simple as it can be, without any additional bloatware functionalities. That means that _Fasttyper_ doesn't come with build in test generator and you have to provide your own scripts generating tests. Some examples of such scrips are providen in [Usage section](#usage).
+_Fasttyper_ is minimalistic typing test based on user provided exercising text. It supports both reading from text files and stdin supporting wide range of usecases. The goal was to create it as simple as it can be, without any additional bloatware functionalities. That means that _Fasttyper_ doesn't come with build in test generator and you have to provide your own scripts generating tests. Some examples of such scripts are provided in [Usage section](#usage).
 
 # Table of contents
 
@@ -20,7 +20,7 @@ _Fasttyper_ is minimalistic typing test based on user provided exercising text. 
 
 # Installation
 
-_Fasttyper_ is currently maintained on [PyPi](https://pypi.org/) Python Package Index. To install package simpply use:
+_Fasttyper_ is currently maintained on [PyPi](https://pypi.org/) Python Package Index. To install package simply use:
 
 `python3 -m pip install fasttyper`
 
@@ -32,7 +32,7 @@ With installation of fasttyper you should have new executable - `fasttyper`. It 
 fasttyper
 ```
 
-from command line. There are some avalibe options:
+from command line. There are some available options:
 
 ```
 usage: fasttyper [-h] [--config FILE] [--unclutter-backspace] [--no-cursor] [amount] [language]
@@ -47,7 +47,7 @@ options:
                         configuration file
   --unclutter-backspace, -b
                         unclutter backspace, when it raises ctrl+backspace instead
-  --no-cursor, -n       disable cursos
+  --no-cursor, -n       disable cursors
 ```
 
 I personally use alias:
@@ -108,7 +108,7 @@ Default configuration:
 }
 ```
 
-Fasttyper by default looks for config file in: `$HOME/.config/fasttyper/config.json`. You can provide different location for config file with `--config` argument, for example: `--config=~/.fasttyper.json`. Config has to be a json dict. Avalibe keys:
+Fasttyper by default looks for config file in: `$HOME/.config/fasttyper/config.json`. You can provide different location for config file with `--config` argument, for example: `--config=~/.fasttyper.json`. Config has to be a json dict. Available keys:
 
 - **user_input_valid_color** - integer, terminal color for valid text, by default it is 3
 - **user_input_invalid_color** - integer, terminal color for invalid text, by default it is 2
@@ -121,7 +121,7 @@ Fasttyper by default looks for config file in: `$HOME/.config/fasttyper/config.j
 
 Also there are keys that override fault parameters for CLI args, like: amount and language will override Your default settings for runner, same goes for punctuation, sentence_mode etc.
 
-Example config file with all default values in avalibe [here](https://github.com/ickyicky/fasttyper/blob/main/doc/example_config.json).
+Example config file with all default values in available [here](https://github.com/ickyicky/fasttyper/blob/main/doc/example_config.json).
 
 Other example config files:
 
@@ -149,13 +149,13 @@ Program also allows user to pipe text into it. Keep in mind, it only supports sp
 
 `furtune | python3 -m fasttyper`
 
-or if you want to randomize words from given file with shuf on for example all disctionaries in system:
+or if you want to randomize words from given file with shuf on for example all dictionaries in system:
 
 `shuf -n5 /usr/share/dict/* | python -m fasttyper`
 
 You can use another similar projects set of words as well, for example to create test with 20 random words from [Monkeytype's](https://github.com/Miodec/monkeytype) english 100 dictionary use:
 
-`curl -s https://raw.githubusercontent.com/Miodec/monkeytype/master/static/languages/english.json | python3 -c "import sys, json; print('\n'.join(json.load(sys.stdin)['words']))" | shuf -n20 | python3 -m fasttyper`
+`curl -s https://raw.githubusercontent.com/monkeytypegame/monkeytype/master/frontend/static/languages/english.json | python3 -c "import sys, json; print('\n'.join(json.load(sys.stdin)['words']))" | shuf -n20 | python3 -m fasttyper`
 
 To exit you can either finish test, use `KeyboardInterrupt` (CTRL+C) or tap **tab**. After you finish test, there will be summary printed, use enter to exit from it.
 
@@ -185,6 +185,6 @@ function ff() {
 ```
 `ff 50 english_1k`
 
-This shell function shuffles N words from cached word list, and if given word list doesnt exist it download's it. It runs in loop, but does exit from it if you exit fasttyper with CTRL+C.
+This shell function shuffles N words from cached word list, and if given word list doesn't exist it download's it. It runs in loop, but does exit from it if you exit fasttyper with CTRL+C.
 
-The above script is avalible for download from doc folder.
+The above script is available for download from doc folder.
